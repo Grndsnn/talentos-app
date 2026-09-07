@@ -1,0 +1,615 @@
+/* ==========================================================================
+   TalentOS - Agent Operations Center (Centro de Agentes)
+   ========================================================================== */
+
+.agent-center-container {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* Agent Top Bar / System Overview */
+.agents-overview-bar {
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+    border-radius: var(--radius-lg);
+    padding: 20px 24px;
+    color: #ffffff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid #334155;
+    box-shadow: var(--shadow-md);
+}
+
+.agents-overview-info h2 {
+    color: #ffffff;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.agents-overview-info p {
+    color: #94a3b8;
+    font-size: 13px;
+    margin-top: 4px;
+}
+
+.system-health-badges {
+    display: flex;
+    gap: 12px;
+}
+
+.health-badge {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid #334155;
+    padding: 6px 12px;
+    border-radius: var(--radius-md);
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.health-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #10b981;
+    box-shadow: 0 0 8px #10b981;
+}
+
+.health-dot.warning { background: #f59e0b; box-shadow: 0 0 8px #f59e0b; }
+.health-dot.danger { background: #ef4444; box-shadow: 0 0 8px #ef4444; }
+
+/* ==========================================================================
+   NUEVA SECCIÓN: DIAGRAMA GRÁFICO INTERACTIVO DE AGENTES
+   ========================================================================== */
+.agent-visual-topology {
+    background: radial-gradient(circle at 50% 30%, #1e293b, #090d16);
+    border: 1px solid #334155;
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    position: relative;
+    overflow: hidden;
+}
+
+.topology-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding-bottom: 12px;
+}
+
+.topology-title {
+    color: #f8fafc;
+    font-size: 14px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.topology-badge {
+    background: rgba(56, 189, 248, 0.15);
+    color: #38bdf8;
+    border: 1px solid rgba(56, 189, 248, 0.3);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+}
+
+/* Topology Canvas Visual Layout */
+.topology-stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+    padding: 10px 0;
+    position: relative;
+}
+
+/* Master Orchestrator Node */
+.master-node-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+}
+
+/* Specialists Nodes Row */
+.specialists-row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+    width: 100%;
+    position: relative;
+    z-index: 2;
+}
+
+@media (max-width: 900px) {
+    .specialists-row {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Graphical Node Card */
+.visual-agent-node {
+    background: rgba(15, 23, 42, 0.85);
+    border: 1px solid #334155;
+    backdrop-filter: blur(8px);
+    border-radius: var(--radius-xl);
+    padding: 18px 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.visual-agent-node:hover {
+    transform: translateY(-4px);
+    border-color: #38bdf8;
+    box-shadow: 0 8px 25px rgba(56, 189, 248, 0.25);
+}
+
+.visual-agent-node.selected {
+    border-color: #38bdf8;
+    background: linear-gradient(180deg, rgba(37, 99, 235, 0.2), rgba(15, 23, 42, 0.95));
+    box-shadow: 0 0 0 2px #38bdf8, 0 10px 25px rgba(37, 99, 235, 0.35);
+}
+
+/* Graphical Avatar Ring */
+.agent-avatar-ring {
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    color: #ffffff;
+    position: relative;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+    transition: all 0.3s ease;
+}
+
+.agent-avatar-ring::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 2px dashed rgba(255, 255, 255, 0.3);
+    animation: rotateRing 12s linear infinite;
+}
+
+@keyframes rotateRing {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.visual-agent-node.selected .agent-avatar-ring {
+    transform: scale(1.08);
+}
+
+.node-name {
+    color: #ffffff;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.node-desc {
+    color: #94a3b8;
+    font-size: 11px;
+    line-height: 1.3;
+}
+
+.node-pill {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 12px;
+    background: rgba(16, 185, 129, 0.15);
+    color: #34d399;
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.node-pulse-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #34d399;
+    box-shadow: 0 0 6px #34d399;
+    animation: dotPulse 1.5s infinite;
+}
+
+@keyframes dotPulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.8); }
+}
+
+/* Strip Gráfico de Agentes en el Dashboard */
+.dashboard-agent-strip {
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 12px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: var(--shadow-sm);
+    gap: 16px;
+}
+
+.strip-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--text-primary);
+    white-space: nowrap;
+}
+
+.strip-avatars-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    overflow-x: auto;
+}
+
+.strip-avatar-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #f8fafc;
+    border: 1px solid var(--border-color);
+    padding: 5px 10px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    text-decoration: none;
+}
+
+.strip-avatar-badge:hover {
+    background: #eff6ff;
+    border-color: var(--accent-blue);
+    transform: translateY(-1px);
+}
+
+.strip-avatar-icon {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    color: #ffffff;
+}
+
+.strip-avatar-name {
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+/* 6-Agent Selector Grid */
+.agents-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 14px;
+}
+
+@media (max-width: 1400px) {
+    .agents-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 900px) {
+    .agents-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+.agent-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 18px 16px;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    position: relative;
+    overflow: hidden;
+}
+
+.agent-card:hover {
+    border-color: var(--accent-blue);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.agent-card.active {
+    border-color: var(--accent-blue);
+    background: linear-gradient(180deg, #f0f7ff, #ffffff);
+    box-shadow: 0 0 0 2px var(--accent-blue), var(--shadow-md);
+}
+
+.agent-card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.agent-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    color: #ffffff;
+    flex-shrink: 0;
+}
+
+.agent-name {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.agent-role {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+.agent-status-pill {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border-radius: 4px;
+    display: inline-block;
+    width: fit-content;
+    margin-top: 4px;
+}
+
+.status-idle { background: #f1f5f9; color: #475569; }
+.status-running { background: #dbeafe; color: #1d4ed8; animation: pulse 1.5s infinite; }
+.status-success { background: #dcfce7; color: #15803d; }
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
+
+/* Agent Workspace (Action Deck + Console) */
+.agent-workspace {
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    gap: 18px;
+    min-height: 480px;
+}
+
+@media (max-width: 1080px) {
+    .agent-workspace {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Controls Panel */
+.agent-controls-panel {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    box-shadow: var(--shadow-sm);
+}
+
+.panel-section-title {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+}
+
+.agent-action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.action-btn {
+    padding: 10px 14px;
+    border-radius: var(--radius-md);
+    font-size: 13px;
+    font-weight: 600;
+    text-align: left;
+    border: 1px solid var(--border-color);
+    background: #f8fafc;
+    color: var(--text-primary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: all var(--transition-fast);
+}
+
+.action-btn:hover {
+    background: #eff6ff;
+    border-color: var(--accent-blue);
+    color: var(--accent-blue);
+}
+
+.action-btn i {
+    width: 18px;
+    text-align: center;
+    font-size: 14px;
+}
+
+/* Agent Interactive Console / Terminal */
+.agent-console-panel {
+    background: #090d16;
+    border: 1px solid #1e293b;
+    border-radius: var(--radius-lg);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+}
+
+.console-header {
+    background: #0f172a;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #1e293b;
+}
+
+.console-title {
+    color: #f8fafc;
+    font-size: 13px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.console-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.console-btn-tool {
+    background: #1e293b;
+    border: 1px solid #334155;
+    color: #94a3b8;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.console-btn-tool:hover {
+    color: #ffffff;
+    background: #334155;
+}
+
+.console-output {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    line-height: 1.6;
+    color: #e2e8f0;
+    max-height: 520px;
+    min-height: 420px;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.console-entry {
+    margin-bottom: 12px;
+    padding-left: 8px;
+    border-left: 2px solid #334155;
+}
+
+.console-entry.info { border-left-color: #38bdf8; color: #bae6fd; }
+.console-entry.success { border-left-color: #10b981; color: #a7f3d0; }
+.console-entry.warning { border-left-color: #f59e0b; color: #fde68a; }
+.console-entry.error { border-left-color: #ef4444; color: #fecaca; }
+
+.console-time {
+    color: #64748b;
+    font-size: 11px;
+    margin-right: 6px;
+}
+
+/* Prompt input bar for Agents */
+.console-prompt-bar {
+    background: #0f172a;
+    border-top: 1px solid #1e293b;
+    padding: 12px 18px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.console-prompt-input {
+    flex: 1;
+    background: #090d16;
+    border: 1px solid #334155;
+    border-radius: var(--radius-md);
+    color: #ffffff;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12.5px;
+    padding: 8px 14px;
+    outline: none;
+}
+
+.console-prompt-input:focus {
+    border-color: #38bdf8;
+    box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2);
+}
+
+/* Project Planner Tasks Board */
+.planner-board {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-top: 14px;
+}
+
+.planner-col {
+    background: #0f172a;
+    border: 1px solid #1e293b;
+    border-radius: var(--radius-md);
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.planner-col-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: #94a3b8;
+    text-transform: uppercase;
+    display: flex;
+    justify-content: space-between;
+}
+
+.planner-card {
+    background: #1e293b;
+    border: 1px solid #334155;
+    border-radius: var(--radius-sm);
+    padding: 10px;
+    font-size: 12px;
+    color: #f1f5f9;
+}

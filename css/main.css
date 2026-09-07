@@ -1,0 +1,221 @@
+/* ==========================================================================
+   TalentOS - Main Styles & Design System
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap');
+
+:root {
+    /* Color Palette */
+    --bg-main: #f8fafc;
+    --bg-card: #ffffff;
+    --bg-dark: #0f172a;
+    --bg-darker: #090d16;
+    --bg-sidebar: #0f172a;
+    --border-color: #e2e8f0;
+    --border-dark: #1e293b;
+    --border-subtle: #cbd5e1;
+
+    /* Text Colors */
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #64748b;
+    --text-light: #f8fafc;
+    --text-dim: #94a3b8;
+
+    /* Brand & Accent Colors */
+    --primary: #1e3a8a;
+    --primary-hover: #1e40af;
+    --accent-blue: #2563eb;
+    --accent-cyan: #06b6d4;
+    --accent-indigo: #4f46e5;
+    --accent-emerald: #059669;
+    --accent-amber: #d97706;
+    --accent-rose: #e11d48;
+
+    /* Status Colors */
+    --status-interview-bg: #dcfce7;
+    --status-interview-text: #15803d;
+    --status-interview-border: #bbf7d0;
+
+    --status-review-bg: #fef3c7;
+    --status-review-text: #b45309;
+    --status-review-border: #fde68a;
+
+    --status-discard-bg: #ffe4e6;
+    --status-discard-text: #be123c;
+    --status-discard-border: #fecdd3;
+
+    /* Radius & Shadows */
+    --radius-sm: 6px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 16px;
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.05);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.06);
+
+    /* Transitions */
+    --transition-fast: 0.15s ease;
+    --transition-normal: 0.25s ease;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+body {
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Typography Helpers */
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+}
+
+.mono-text {
+    font-family: 'JetBrains Mono', monospace;
+}
+
+/* Buttons */
+.btn {
+    padding: 8px 16px;
+    border-radius: var(--radius-md);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all var(--transition-fast);
+    text-decoration: none;
+    outline: none;
+}
+
+.btn:active {
+    transform: translateY(1px);
+}
+
+.btn-white {
+    background: #ffffff;
+    border: 1px solid var(--border-subtle);
+    color: #334155;
+}
+
+.btn-white:hover {
+    background: #f1f5f9;
+    border-color: #94a3b8;
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: #ffffff;
+}
+
+.btn-primary:hover {
+    background: var(--primary-hover);
+    box-shadow: 0 4px 12px rgba(30, 58, 138, 0.25);
+}
+
+.btn-accent {
+    background: linear-gradient(135deg, #0284c7, #2563eb);
+    color: #ffffff;
+}
+
+.btn-accent:hover {
+    background: linear-gradient(135deg, #0369a1, #1d4ed8);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+.btn-danger {
+    background: var(--accent-rose);
+    color: #ffffff;
+}
+
+.btn-danger:hover {
+    background: #be123c;
+}
+
+.btn-sm {
+    padding: 5px 10px;
+    font-size: 12px;
+}
+
+/* Badges and Tags */
+.badge-req {
+    background: #eff6ff;
+    color: #1d4ed8;
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    border: 1px solid #bfdbfe;
+    font-weight: 600;
+}
+
+.skill-tag {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 500;
+    background: #eff6ff;
+    color: #1d4ed8;
+    border: 1px solid #dbeafe;
+    margin-right: 4px;
+    margin-bottom: 4px;
+}
+
+/* Toast Notifications */
+#toastContainer {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 9999;
+    pointer-events: none;
+}
+
+.toast {
+    background: #0f172a;
+    color: #ffffff;
+    padding: 12px 18px;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-xl);
+    border-left: 4px solid var(--accent-blue);
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    pointer-events: auto;
+    animation: toastSlideIn 0.3s ease forwards;
+    max-width: 360px;
+}
+
+.toast.success { border-left-color: var(--accent-emerald); }
+.toast.error { border-left-color: var(--accent-rose); }
+.toast.warning { border-left-color: var(--accent-amber); }
+
+@keyframes toastSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(40px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
