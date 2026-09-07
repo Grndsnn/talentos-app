@@ -150,6 +150,47 @@ export class AgentsController {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
+    // Solo ejecuta la animación visual de los 6 agentes.
+    // No sube el archivo (eso ya lo hace dashboard.js -> n8nService.uploadCv).
+    async runCvPipelineSimulation(fileName) {
+        const steps = [
+            { id: 'orchestrator', text: 'Coordinando...' },
+            { id: 'backend', text: 'Extrayendo PDF...' },
+            { id: 'archaeologist', text: 'Optimizando perfil...' },
+            { id: 'debugger', text: 'Auditando equidad...' },
+            { id: 'planner', text: 'Organizando flujo...' },
+            { id: 'test', text: 'Validando score...' }
+        ];
+
+        for (const step of steps) {
+            const badgeText = document.getElementById(`badge-text-${step.id}`);
+            const dot = document.getElementById(`dot-${step.id}`);
+            const card = document.getElementById(`card-node-${step.id}`);
+
+            if (badgeText) badgeText.innerText = step.text;
+            if (dot) {
+                dot.style.background = '#f59e0b';
+                dot.style.boxShadow = '0 0 8px #f59e0b';
+            }
+            if (card) card.style.borderColor = '#f59e0b';
+
+            await this.delay(600);
+
+            if (dot) {
+                dot.style.background = '#10b981';
+                dot.style.boxShadow = '0 0 6px #10b981';
+            }
+            if (badgeText) badgeText.innerText = 'Completado';
+            if (card) card.style.borderColor = '#334155';
+        }
+
+        const agentKeys = Object.keys(CONFIG.AGENTS);
+        agentKeys.forEach(k => {
+            const badgeText = document.getElementById(`badge-text-${k}`);
+            if (badgeText) badgeText.innerText = (k === 'orchestrator') ? '📄 Subir CV aquí' : 'Activo y Listo';
+        });
+    }
+
     async handleAgentCvUpload(event) {
         const file = event.target.files[0];
         if (!file) return;
