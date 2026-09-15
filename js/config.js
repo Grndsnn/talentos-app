@@ -31,6 +31,7 @@ export const CONFIG = {
             title: 'Coordinador de Selección',
             icon: 'fa-sitemap',
             color: '#2563eb',
+            avatar: 'img/avatars/orchestrator.svg',
             description: 'Coordina el análisis integral y gestiona la entrada de hojas de vida.'
         },
         backend: {
@@ -39,6 +40,7 @@ export const CONFIG = {
             title: 'Extractor de Habilidades',
             icon: 'fa-server',
             color: '#059669',
+            avatar: 'img/avatars/parser.svg',
             description: 'Extrae perfiles, parsea PDFs y calcula el puntaje de coincidencia (Match Score).'
         },
         archaeologist: {
@@ -47,6 +49,7 @@ export const CONFIG = {
             title: 'Optimizador de Perfil',
             icon: 'fa-landmark',
             color: '#d97706',
+            avatar: 'img/avatars/archaeologist.svg',
             description: 'Especialista en estructurar historiales laborales y normalizar competencias.'
         },
         debugger: {
@@ -55,6 +58,7 @@ export const CONFIG = {
             title: 'Auditor de Equidad',
             icon: 'fa-bug',
             color: '#e11d48',
+            avatar: 'img/avatars/debugger.svg',
             description: 'Verifica la integridad de los datos y asegura un filtrado libre de sesgos.'
         },
         planner: {
@@ -63,6 +67,7 @@ export const CONFIG = {
             title: 'Planificador de Entrevistas',
             icon: 'fa-diagram-project',
             color: '#0891b2',
+            avatar: 'img/avatars/planner.svg',
             description: 'Organiza los estados del proceso y los hitos de contratación.'
         },
         test: {
@@ -71,6 +76,7 @@ export const CONFIG = {
             title: 'Validador de Candidatos',
             icon: 'fa-vial-circle-check',
             color: '#7c3aed',
+            avatar: 'img/avatars/quality.svg',
             description: 'Valida que la puntuación y las métricas de IA cumplan con los requisitos.'
         }
     },

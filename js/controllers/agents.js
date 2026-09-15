@@ -57,25 +57,27 @@ export class AgentsController {
                     </span>
                 </div>
 
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; width: 100%;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; width: 100%; justify-content: center;">
                     ${agents.map((agent) => {
             const isOrchestrator = agent.id === 'orchestrator';
             const clickAction = isOrchestrator ? "document.getElementById('topologyCvInput').click()" : `window.app.agents.triggerAgentAction('${agent.id}')`;
             const bgStyle = isOrchestrator ? 'linear-gradient(135deg, rgba(37,99,235,0.2), rgba(15,23,42,0.9))' : 'rgba(15, 23, 42, 0.85)';
             const borderStyle = isOrchestrator ? '2px dashed #38bdf8' : '1px solid #334155';
-            const badgeText = isOrchestrator ? '📄 Subir CV aquí' : 'Activo y Listo';
+            const badgeText = isOrchestrator ? '\ud83d\udcc4 Subir CV aqui' : 'Activo y Listo';
+            const fallbackIcon = `<i class="fa-solid ${agent.icon}"></i>`;
 
             return `
                             <div id="card-node-${agent.id}" 
                                  onclick="${clickAction}" 
-                                 style="background: ${bgStyle}; border: ${borderStyle}; border-radius: 20px; padding: 24px 20px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px; cursor: pointer; transition: all 0.3s ease; position: relative; box-shadow: 0 8px 20px rgba(0,0,0,0.3);">
+                                 style="background: ${bgStyle}; border: ${borderStyle}; border-radius: 20px; padding: 20px 16px 16px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px; cursor: pointer; transition: all 0.3s ease; position: relative; box-shadow: 0 8px 20px rgba(0,0,0,0.3);">
                                  
-                                <div style="width: 64px; height: 64px; border-radius: 50%; background: ${agent.color}; display: flex; align-items: center; justify-content: center; font-size: 26px; color: #ffffff; box-shadow: 0 0 20px ${agent.color}88; position: relative;">
-                                    <i class="fa-solid ${agent.icon}"></i>
+                                <div class="agent-avatar-bounce" data-id="${agent.id}" style="width: 110px; height: 130px; display: flex; align-items: center; justify-content: center; transition: transform 0.3s ease; filter: drop-shadow(0 8px 20px ${agent.color}66);">
+                                    <img src="${agent.avatar}" alt="${agent.name}" width="110" height="130" style="object-fit: contain;" onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                    <div style="display:none; width:90px; height:90px; border-radius:50%; background:${agent.color}; align-items:center; justify-content:center; font-size:30px; color:#fff;">${fallbackIcon}</div>
                                 </div>
                                 
                                 <div>
-                                    <div style="color: #ffffff; font-size: 15px; font-weight: 700;">🤖 ${agent.name}</div>
+                                    <div style="color: #ffffff; font-size: 15px; font-weight: 700;">\ud83e\udd16 ${agent.name}</div>
                                     <div style="color: #38bdf8; font-size: 11.5px; font-weight: 600; margin-top: 2px;">${agent.title}</div>
                                 </div>
 
@@ -94,6 +96,12 @@ export class AgentsController {
 
             </div>
         `;
+
+        // Hover bounce effect via JS (safe, no inline quote issues)
+        this.topologyContainer.querySelectorAll('.agent-avatar-bounce').forEach(el => {
+            el.addEventListener('mouseenter', () => { el.style.transform = 'scale(1.1) translateY(-6px)'; });
+            el.addEventListener('mouseleave', () => { el.style.transform = 'scale(1) translateY(0)'; });
+        });
     }
 
     renderDashboardStrip() {
@@ -107,12 +115,13 @@ export class AgentsController {
                 </div>
                 <div style="display: flex; align-items: center; gap: 12px; overflow-x: auto;">
                     ${agents.map(a => `
-                        <div style="display: flex; align-items: center; gap: 8px; background: #f8fafc; border: 1px solid #e2e8f0; padding: 6px 12px; border-radius: 20px;">
-                            <div style="width: 24px; height: 24px; border-radius: 50%; background: ${a.color}; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #fff;">
-                                <i class="fa-solid ${a.icon}"></i>
+                        <div style="display: flex; align-items: center; gap: 8px; background: #f8fafc; border: 1px solid #e2e8f0; padding: 5px 12px 5px 6px; border-radius: 20px; transition: all 0.2s;" onmouseenter="this.style.background='#eff6ff'; this.style.borderColor='#3b82f6'" onmouseleave="this.style.background='#f8fafc'; this.style.borderColor='#e2e8f0'">
+                            <div style="width: 30px; height: 30px; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 1.5px solid ${a.color}55; background: #090d16; flex-shrink: 0;">
+                                <img src="${a.avatar}" alt="${a.name}" width="30" height="30" style="object-fit: cover; border-radius: 50%;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div style="display: none; width: 30px; height: 30px; border-radius: 50%; background: ${a.color}; align-items: center; justify-content: center; font-size: 12px; color: #fff;"><i class=\"fa-solid ${a.icon}\"></i></div>
                             </div>
                             <span style="font-size: 12px; font-weight: 600; color: #475569;">${a.name}</span>
-                            <span style="width: 6px; height: 6px; border-radius: 50%; background: #10b981; box-shadow: 0 0 6px #10b981;"></span>
+                            <span style="width: 6px; height: 6px; border-radius: 50%; background: #10b981; box-shadow: 0 0 6px #10b981; flex-shrink: 0;"></span>
                         </div>
                     `).join('')}
                 </div>
@@ -123,17 +132,34 @@ export class AgentsController {
     renderAgentCards() {
         if (!this.cardsContainer) return;
         const agents = Object.values(CONFIG.AGENTS);
-        this.cardsContainer.innerHTML = agents.map(agent => `
-            <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 16px; display: flex; align-items: center; gap: 14px; box-shadow: 0 2px 6px rgba(0,0,0,0.02);">
-                <div style="background: ${agent.color}; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 18px; flex-shrink: 0;">
-                    <i class="fa-solid ${agent.icon}"></i>
+
+        this.cardsContainer.innerHTML = agents.map(agent => {
+            const fallbackIcon = `<i class="fa-solid ${agent.icon}"></i>`;
+            return `
+            <div class="agent-summary-card" data-color="${agent.color}" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 14px 16px; display: flex; align-items: center; gap: 14px; box-shadow: 0 2px 6px rgba(0,0,0,0.02); transition: border-color 0.2s, box-shadow 0.2s; cursor:pointer;">
+                <div style="width: 48px; height: 48px; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; border: 2px solid ${agent.color}55; background: #090d16; flex-shrink: 0;">
+                    <img src="${agent.avatar}" alt="${agent.name}" width="48" height="48" style="object-fit: contain; border-radius: 50%;" onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div style="display:none; width:48px; height:48px; border-radius:50%; background:${agent.color}; align-items:center; justify-content:center; color:#fff; font-size:18px;">${fallbackIcon}</div>
                 </div>
                 <div>
                     <div style="font-weight: 700; font-size: 13.5px; color: #0f172a;">🤖 ${agent.name}</div>
                     <div style="font-size: 11.5px; color: #64748b; margin-top: 1px;">${agent.title}</div>
                 </div>
-            </div>
-        `).join('');
+            </div>`;
+        }).join('');
+
+        // Hover effects via JS (avoids inline quote escaping issues)
+        this.cardsContainer.querySelectorAll('.agent-summary-card').forEach(card => {
+            const color = card.dataset.color;
+            card.addEventListener('mouseenter', () => {
+                card.style.borderColor = color;
+                card.style.boxShadow = `0 4px 12px rgba(0,0,0,0.1)`;
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.borderColor = '#e2e8f0';
+                card.style.boxShadow = '0 2px 6px rgba(0,0,0,0.02)';
+            });
+        });
     }
 
     triggerAgentAction(agentId) {
