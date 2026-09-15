@@ -159,6 +159,54 @@ class SupabaseService {
         telemetry.success(`Candidato eliminado exitosamente`, 'SUPABASE');
         return data;
     }
+
+    /**
+     * Sube un archivo PDF al bucket 'cvs' de Supabase Storage.
+     * @param {string} filePath - Ruta en el bucket (ej. `${batchId}/${file.name}`)
+     * @param {File} file - Archivo PDF a subir
+     */
+    async uploadCvToStorage(filePath, file) {
+        const client = await this.getClient();
+        if (!client) throw new Error('Cliente Supabase no inicializado');
+
+        telemetry.info(`Subiendo ${file.name} a Supabase Storage (cvs/${filePath})...`, 'SUPABASE');
+        const { data, error } = await client.storage
+            .from('cvs')
+            .upload(filePath, file, {
+                cacheControl: '3600',
+                upsert: true
+            });
+
+        if (error) {
+            telemetry.error(`Error al subir ${file.name} a Storage: ${error.message}`, 'SUPABASE');
+            throw error;
+        }
+
+        telemetry.success(`Archivo ${file.name} subido a Storage correctamente`, 'SUPABASE');
+        return data;
+    }
+
+    /**
+     * Inserta candidatos en estado PENDING con batch_id y file_path.
+     * @param {Array<Object>} candidatesList - Lista de candidatos pendientes
+     */
+    async createPendingCandidates(candidatesList) {
+        const client = await this.getClient();
+        if (!client) throw new Error('Cliente Supabase no inicializado');
+
+        telemetry.info(`Registrando ${candidatesList.length} candidato(s) en estado PENDING...`, 'SUPABASE');
+        const { data, error } = await client
+            .from('candidates')
+            .insert(candidatesList);
+
+        if (error) {
+            telemetry.error(`Error al registrar candidatos pendientes: ${error.message}`, 'SUPABASE');
+            throw error;
+        }
+
+        telemetry.success(`${candidatesList.length} candidato(s) registrados como PENDING`, 'SUPABASE');
+        return data;
+    }
 }
 
 export const supabaseService = new SupabaseService();

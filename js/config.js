@@ -13,7 +13,7 @@ export const CONFIG = {
 
     // n8n Webhook Configuration
     N8N: {
-        CV_WEBHOOK_URL: 'https://n8n-david.automindanalytics.com/webhook/cv-webhook'
+        CV_WEBHOOK_URL: 'https://n8n-david.automindanalytics.com/webhook/cv-screening-batch'
     },
 
     // Demo Auth Credentials

@@ -7,36 +7,48 @@ import { CONFIG } from '../config.js';
 import { telemetry } from './telemetry.js';
 
 class N8nService {
-    async uploadCv(file, vacanteId) {
-        if (!file) throw new Error('No se seleccionó ningún archivo');
-        if (!vacanteId) throw new Error('Debe seleccionar una vacante antes de subir el CV');
+    /**
+     * Notifica a n8n para iniciar el procesamiento asíncrono del lote.
+     * Envía un JSON con { batch_id: batchId }.
+     * @param {string} batchId - Identificador único del lote
+     * @returns {Promise<{success: boolean, status?: number, latency: number}>}
+     */
+    async notifyBatchProcessing(batchId) {
+        if (!batchId) throw new Error('Se requiere un batchId para notificar a n8n');
 
-        telemetry.info(`Iniciando envío de CV (${file.name}, ${(file.size / 1024).toFixed(1)} KB) a n8n...`, 'N8N');
-
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('vacante_id', vacanteId);
+        telemetry.info(`Notificando a n8n lote de procesamiento: ${batchId}...`, 'N8N');
 
         try {
             const startTime = performance.now();
             const response = await fetch(CONFIG.N8N.CV_WEBHOOK_URL, {
                 method: 'POST',
-                body: formData
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ batch_id: batchId })
             });
 
             const latency = Math.round(performance.now() - startTime);
 
             if (response.ok) {
-                telemetry.success(`Webhook n8n procesó ${file.name} con éxito (${latency}ms)`, 'N8N');
+                telemetry.success(`Webhook n8n notificado con éxito para lote ${batchId} (${latency}ms)`, 'N8N');
                 return { success: true, latency };
             } else {
                 telemetry.error(`Webhook n8n respondió con status ${response.status} (${response.statusText})`, 'N8N');
                 return { success: false, status: response.status, latency };
             }
         } catch (err) {
-            telemetry.error(`Error de red al conectar con webhook n8n: ${err.message}`, 'N8N');
+            telemetry.error(`Error de red al notificar webhook n8n: ${err.message}`, 'N8N');
             throw err;
         }
+    }
+
+    // Alias para compatibilidad hacia atrás si algún módulo invoca uploadCv
+    async uploadCv(fileOrBatchId, vacanteId) {
+        if (typeof fileOrBatchId === 'string') {
+            return this.notifyBatchProcessing(fileOrBatchId);
+        }
+        throw new Error('El método directo uploadCv con archivos ha sido reemplazado por la arquitectura asíncrona notifyBatchProcessing(batchId).');
     }
 
     async testWebhookConnectivity() {

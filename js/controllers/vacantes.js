@@ -100,6 +100,32 @@ export class VacantesController {
         return this.currentVacanteId;
     }
 
+    openNewVacanteModal() {
+        // TODO: Replace with a proper modal UI when the new-vacancy form is built
+        const titulo = prompt('Nombre de la nueva vacante:', '');
+        if (!titulo || !titulo.trim()) return;
+
+        const area = prompt('Área / Departamento:', 'General') || 'General';
+        const descripcion = prompt('Descripción breve:', '') || '';
+
+        const payload = {
+            titulo: titulo.trim(),
+            area: area.trim(),
+            descripcion: descripcion.trim(),
+            skills_requeridas: [],
+            anios_min: 0
+        };
+
+        import('../services/supabase.js').then(({ supabaseService }) => {
+            supabaseService.createVacante(payload)
+                .then(() => {
+                    alert(`Vacante "${titulo}" creada exitosamente.`);
+                    this.loadVacantes();
+                })
+                .catch(err => alert(`Error al crear vacante: ${err.message}`));
+        });
+    }
+
     setVacante(vacanteId) {
         this.currentVacanteId = vacanteId;
         if (this.selectEl) this.selectEl.value = vacanteId;

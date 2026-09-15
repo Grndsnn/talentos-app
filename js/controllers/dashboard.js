@@ -20,7 +20,7 @@ export class DashboardController {
         this.valTotal = document.getElementById('valTotal');
         this.valShortlist = document.getElementById('valShortlist');
         this.valAvg = document.getElementById('valAvg');
-        this.valTime = document.getElementById('valTime');
+        this.valGaps = document.getElementById('valGaps');
         this.searchInput = document.getElementById('searchInput');
         this.modal = document.getElementById('candidateModal');
         this.modalName = document.getElementById('modalName');
@@ -77,7 +77,7 @@ export class DashboardController {
 
         this.talentosBody.innerHTML = `
             <tr>
-                <td colspan="5" style="text-align: center; color: #94a3b8; padding: 30px;">
+                <td colspan="7" style="text-align: center; color: #94a3b8; padding: 30px;">
                     <i class="fa-solid fa-spinner fa-spin"></i> Cargando base global de talentos...
                 </td>
             </tr>
@@ -88,47 +88,186 @@ export class DashboardController {
 
             if (!data || data.length === 0) {
                 this.talentosBody.innerHTML = `
-                    <tr><td colspan="6" style="text-align:center; color:#94a3b8; padding:30px;">Aún no hay talentos en la base de datos.</td></tr>
+                    <tr><td colspan="7" style="text-align:center; color:#94a3b8; padding:30px;">Aún no hay talentos en la base de datos.</td></tr>
                 `;
                 return;
             }
 
-            this.talentosBody.innerHTML = data.map(c => {
+            this.talentosBody.innerHTML = data.map((c, index) => {
                 const score = c.score_hybrid || 0;
-                let scoreClass = 'score-green', statusClass = 'status-interview';
-                if (score < 60) { scoreClass = 'score-red'; statusClass = 'status-discard'; }
-                else if (score < 80) { scoreClass = 'score-amber'; statusClass = 'status-review'; }
+                let statusClass = 'status-interview';
+                if (score < 60) statusClass = 'status-discard';
+                else if (score < 80) statusClass = 'status-review';
 
                 const skills = c.parsed_json?.habilidades || [];
                 const tags = skills.slice(0, 3).map(s => `<span class="skill-tag">${s}</span>`).join('');
                 const vacanteTitulo = c.vacantes?.titulo || c.vacante_id || 'Sin asignar';
-
                 const safeName = (c.name || 'Candidato').replace(/'/g, "\\'");
+
                 return `
                     <tr>
+                        <td style="text-align:center; padding:10px; width:44px;" onclick="event.stopPropagation()">
+                            <input type="checkbox"
+                                   class="talento-chk"
+                                   data-id="${c.id}"
+                                   data-email="${c.email || ''}"
+                                   data-vacante="${c.vacante_id || ''}"
+                                   data-name="${safeName}"
+                                   onchange="window.app.dashboard.updateTalentosSelection()"
+                                   style="width:15px; height:15px; cursor:pointer; accent-color:#1e3a8a;">
+                        </td>
                         <td>
-                            <strong>${c.name}</strong><br>
-                            <span style="font-size:11px; color:#64748b;">${c.email || 'Sin correo'}</span>
+                            <div class="candidate-cell">
+                                <div class="candidate-avatar">${(c.name || '?')[0].toUpperCase()}</div>
+                                <div>
+                                    <strong>${c.name}</strong><br>
+                                    <span style="font-size:11px; color:#64748b;">${c.email || 'Sin correo'}</span>
+                                </div>
+                            </div>
                         </td>
                         <td><span style="font-weight:500; font-size:12.5px;">${vacanteTitulo}</span></td>
-                        <td><span class="score-pill ${scoreClass}">${score}/100</span></td>
+                        <td style="text-align:center;">${this.buildScoreWheel(score)}</td>
                         <td>${tags || '<span style="color:#94a3b8;">Sin registrar</span>'}</td>
+                        <td>${this.buildGapsCell(c)}</td>
                         <td><span class="status-badge ${statusClass}">${c.status || 'REVISAR'}</span></td>
-                        <td style="text-align: center;">
-                            <button class="btn btn-sm btn-white" style="color: var(--accent-rose); border-color: #fecdd3; padding: 5px 10px;"
-                                    onclick="window.app.dashboard.deleteTalento('${c.id}', '${c.email || ''}', '${c.vacante_id || ''}', '${safeName}')"
-                                    title="Eliminar este CV y candidato permanentemente">
-                                <i class="fa-solid fa-trash-can"></i> Eliminar
-                            </button>
+                        <td>
+                            <div class="action-btns">
+                                <button class="action-btn action-btn--email"
+                                        onclick="window.app.dashboard.sendEmailById('${c.email || ''}', '${safeName}')"
+                                        title="Enviar correo">
+                                    <i class="fa-solid fa-envelope"></i>
+                                </button>
+                                <button class="action-btn action-btn--msg"
+                                        onclick="window.app.dashboard.sendMessageById('${safeName}')"
+                                        title="Enviar mensaje">
+                                    <i class="fa-solid fa-comment"></i>
+                                </button>
+                                <button class="action-btn action-btn--del"
+                                        onclick="window.app.dashboard.deleteTalento('${c.id}', '${c.email || ''}', '${c.vacante_id || ''}', '${safeName}')"
+                                        title="Eliminar">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </button>
+                            </div>
                         </td>
                     </tr>
                 `;
             }).join('');
+
+            // Reset select-all state on fresh load
+            const selAll = document.getElementById('talentosSelectAll');
+            if (selAll) selAll.checked = false;
+            this.updateTalentosSelection();
+
         } catch (err) {
             this.talentosBody.innerHTML = `
-                <tr><td colspan="5" style="text-align:center; color:#e11d48; padding:20px;">Error al cargar datos de talentos.</td></tr>
+                <tr><td colspan="8" style="text-align:center; color:#e11d48; padding:20px;">Error al cargar datos de talentos.</td></tr>
             `;
         }
+    }
+
+    // Toggle all checkboxes in talentos table
+    toggleSelectAllTalentos(checked) {
+        document.querySelectorAll('.talento-chk').forEach(chk => { chk.checked = checked; });
+        this.updateTalentosSelection();
+    }
+
+    // Update bulk-delete button state and counter label
+    updateTalentosSelection() {
+        const checked = document.querySelectorAll('.talento-chk:checked');
+        const total   = document.querySelectorAll('.talento-chk');
+        const btn     = document.getElementById('btnDeleteSelected');
+        const counter = document.getElementById('talentosSelCount');
+        const selAll  = document.getElementById('talentosSelectAll');
+
+        const n = checked.length;
+
+        if (counter) {
+            counter.innerHTML = n > 0
+                ? `<i class="fa-solid fa-circle-check" style="color:#e11d48;"></i> <strong>${n}</strong> candidato${n > 1 ? 's' : ''} seleccionado${n > 1 ? 's' : ''}`
+                : '<i class="fa-solid fa-users" style="color:#2563eb;"></i> Selecciona candidatos para eliminar';
+        }
+        if (btn) {
+            btn.disabled = n === 0;
+            btn.style.opacity = n === 0 ? '0.45' : '1';
+        }
+        // Indeterminate state for select-all checkbox
+        if (selAll) {
+            selAll.indeterminate = n > 0 && n < total.length;
+            selAll.checked = n > 0 && n === total.length;
+        }
+    }
+
+    // Delete all selected talentos
+    async deleteSelectedTalentos() {
+        const checked = document.querySelectorAll('.talento-chk:checked');
+        if (!checked.length) return;
+
+        const names = Array.from(checked).map(chk => chk.dataset.name).join(', ');
+        const confirmDelete = confirm(`¿Eliminar permanentemente ${checked.length} candidato${checked.length > 1 ? 's' : ''} de la Base de Talentos?\n\n${names}`);
+        if (!confirmDelete) return;
+
+        const btn = document.getElementById('btnDeleteSelected');
+        if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Eliminando...'; }
+
+        let errors = 0;
+        for (const chk of checked) {
+            try {
+                await supabaseService.deleteCandidate(chk.dataset.id, chk.dataset.email, chk.dataset.vacante);
+            } catch {
+                errors++;
+            }
+        }
+
+        if (errors > 0) alert(`Se eliminaron ${checked.length - errors} candidatos. ${errors} fallaron.`);
+        else alert(`${checked.length} candidato${checked.length > 1 ? 's' : ''} eliminado${checked.length > 1 ? 's' : ''} exitosamente.`);
+
+        await this.loadTalentos();
+        if (this.currentVacanteId) await this.loadCandidates(this.currentVacanteId);
+    }
+
+
+    // Builds circular SVG score wheel
+    buildScoreWheel(score) {
+        const radius = 26;
+        const circumference = 2 * Math.PI * radius;
+        const pct = Math.min(Math.max(score, 0), 100);
+        const offset = circumference - (pct / 100) * circumference;
+
+        let color, trackColor;
+        if (pct >= 80) {
+            color = '#10b981'; trackColor = '#d1fae5';
+        } else if (pct >= 60) {
+            color = '#f59e0b'; trackColor = '#fef3c7';
+        } else {
+            color = '#ef4444'; trackColor = '#fee2e2';
+        }
+
+        return `
+            <div class="score-wheel-wrap">
+                <svg width="66" height="66" viewBox="0 0 66 66">
+                    <circle cx="33" cy="33" r="${radius}" fill="none" stroke="${trackColor}" stroke-width="6"/>
+                    <circle cx="33" cy="33" r="${radius}" fill="none" stroke="${color}" stroke-width="6"
+                        stroke-dasharray="${circumference}" stroke-dashoffset="${offset}"
+                        stroke-linecap="round" transform="rotate(-90 33 33)"/>
+                </svg>
+                <span class="score-wheel-num" style="color:${color};">${pct}</span>
+            </div>`;
+    }
+
+    // Builds gaps cell HTML from candidate data
+    buildGapsCell(c) {
+        const gaps = c.parsed_json?.gaps || c.gaps || [];
+        const hasCritical = (c.score_hybrid || 0) < 60;
+
+        if (!gaps.length && !hasCritical) {
+            return `<span class="gap-none"><i class="fa-solid fa-circle-check"></i> Ninguno crítico</span>`;
+        }
+        if (hasCritical && !gaps.length) {
+            return `<span class="gap-warn"><i class="fa-solid fa-triangle-exclamation"></i> Score bajo</span>`;
+        }
+        return gaps.slice(0, 2).map(g =>
+            `<span class="gap-tag"><i class="fa-solid fa-xmark"></i> ${g}</span>`
+        ).join('');
     }
 
     updateStats(list) {
@@ -136,12 +275,12 @@ export class DashboardController {
         const total = list.length;
         const shortlist = list.filter(c => c.status === 'ENTREVISTAR').length;
         const avg = total ? Math.round(list.reduce((acc, c) => acc + (c.score_hybrid || 0), 0) / total) : 0;
-        const hours = Math.round(total * 0.4);
+        const gaps = list.filter(c => (c.score_hybrid || 0) < 60).length;
 
         this.valTotal.innerText = total;
         this.valShortlist.innerText = shortlist;
         this.valAvg.innerText = avg;
-        this.valTime.innerText = `${hours}h`;
+        if (this.valGaps) this.valGaps.innerText = gaps;
     }
 
     setFilter(status) {
@@ -189,33 +328,48 @@ export class DashboardController {
 
         this.tableBody.innerHTML = list.map((c, index) => {
             const score = c.score_hybrid || 0;
-            let scoreClass = 'score-green', statusClass = 'status-interview';
-
-            if (score < 60) {
-                scoreClass = 'score-red';
-                statusClass = 'status-discard';
-            } else if (score < 80) {
-                scoreClass = 'score-amber';
-                statusClass = 'status-review';
-            }
+            let statusClass = 'status-interview';
+            if (score < 60) statusClass = 'status-discard';
+            else if (score < 80) statusClass = 'status-review';
 
             const skills = c.parsed_json?.habilidades || [];
-            const tags = skills.slice(0, 4).map(s => `<span class="skill-tag">${s}</span>`).join('');
+            const tags = skills.slice(0, 3).map(s => `<span class="skill-tag">${s}</span>`).join('');
+            const safeEmail = (c.email || '').replace(/'/g, "\\'");
+            const safeName = (c.name || '').replace(/'/g, "\\'");
 
             return `
                 <tr onclick="window.app.dashboard.openModal(${index})">
                     <td>
-                        <strong>${c.name}</strong><br>
-                        <span style="font-size: 11px; color: #64748b;">${c.email || 'Sin correo registrado'}</span>
+                        <div class="candidate-cell">
+                            <div class="candidate-avatar">${(c.name || '?')[0].toUpperCase()}</div>
+                            <div>
+                                <strong>${c.name}</strong><br>
+                                <span style="font-size: 11px; color: #64748b;">${c.email || 'Sin correo'}</span>
+                            </div>
+                        </div>
                     </td>
-                    <td><span class="score-pill ${scoreClass}">${score}/100</span></td>
-                    <td>${tags || '<span style="color:#94a3b8; font-size:12px;">Análisis en curso...</span>'}</td>
+                    <td style="text-align:center;">${this.buildScoreWheel(score)}</td>
+                    <td>${tags || '<span style="color:#94a3b8; font-size:12px;">En análisis...</span>'}</td>
+                    <td>${this.buildGapsCell(c)}</td>
                     <td><span class="status-badge ${statusClass}">${c.status || 'REVISAR'}</span></td>
-                    <td style="text-align: center;" onclick="event.stopPropagation()">
-                        <button class="btn btn-sm btn-white" style="color: var(--accent-rose); border-color: #fecdd3; padding: 4px 8px;" 
-                                onclick="window.app.dashboard.deleteCandidate(${index}, event)" title="Eliminar este CV">
-                            <i class="fa-solid fa-trash-can"></i>
-                        </button>
+                    <td onclick="event.stopPropagation()">
+                        <div class="action-btns">
+                            <button class="action-btn action-btn--email"
+                                    onclick="window.app.dashboard.sendEmail(${index}, event)"
+                                    title="Enviar correo">
+                                <i class="fa-solid fa-envelope"></i>
+                            </button>
+                            <button class="action-btn action-btn--msg"
+                                    onclick="window.app.dashboard.sendMessage(${index}, event)"
+                                    title="Enviar mensaje">
+                                <i class="fa-solid fa-comment"></i>
+                            </button>
+                            <button class="action-btn action-btn--del"
+                                    onclick="window.app.dashboard.deleteCandidate(${index}, event)"
+                                    title="Eliminar CV">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
                     </td>
                 </tr>
             `;
@@ -321,6 +475,35 @@ export class DashboardController {
         if (this.modal) this.modal.classList.remove('active');
     }
 
+    sendEmail(index, event) {
+        if (event) event.stopPropagation();
+        const c = this.candidates[index];
+        if (!c) return;
+        const subject = encodeURIComponent(`Proceso de selección - ${c.name}`);
+        const body = encodeURIComponent(`Hola ${c.name},\n\nTe contactamos respecto al proceso de selección.\n\nSaludos,\nEquipo de RRHH`);
+        window.open(`mailto:${c.email || ''}?subject=${subject}&body=${body}`);
+    }
+
+    sendMessage(index, event) {
+        if (event) event.stopPropagation();
+        const c = this.candidates[index];
+        if (!c) return;
+        const text = encodeURIComponent(`Hola ${c.name}, te contactamos sobre tu candidatura.`);
+        window.open(`https://wa.me/?text=${text}`);
+    }
+
+    // Used by Base de Talentos action buttons (referenced by email/name, not array index)
+    sendEmailById(email, name) {
+        const subject = encodeURIComponent(`Proceso de selección - ${name}`);
+        const body = encodeURIComponent(`Hola ${name},\n\nTe contactamos respecto al proceso de selección.\n\nSaludos,\nEquipo de RRHH`);
+        window.open(`mailto:${email}?subject=${subject}&body=${body}`);
+    }
+
+    sendMessageById(name) {
+        const text = encodeURIComponent(`Hola ${name}, te contactamos sobre tu candidatura.`);
+        window.open(`https://wa.me/?text=${text}`);
+    }
+
     async insertMockCandidate() {
         const vacanteId = this.currentVacanteId;
         if (!vacanteId) {
@@ -346,73 +529,98 @@ export class DashboardController {
         }
     }
 
-    async uploadCvFile(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-
-        const btnTextSpan = document.getElementById('uploadBtnText');
-        const originalHtml = btnTextSpan ? btnTextSpan.innerHTML : '';
-        if (btnTextSpan) {
-            btnTextSpan.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Analizando CV con IA...';
-        }
-
-        // Animación visual del Centro de Agentes (no bloqueante: corre en paralelo al upload real)
-        if (window.app.agents) {
-            window.app.agents.runCvPipelineSimulation(file.name);
-        }
-
-        try {
-            const result = await n8nService.uploadCv(file, this.currentVacanteId);
-            if (result.success) {
-                alert(`¡El archivo ${file.name} fue analizado y enviado a n8n con éxito!`);
-                await this.loadCandidates(this.currentVacanteId);
-            } else {
-                alert(`n8n respondió con error (${result.status}). Verifica el flujo.`);
-            }
-        } catch (err) {
-            alert(`Error de red al conectar con n8n: ${err.message}`);
-        } finally {
-            if (btnTextSpan) btnTextSpan.innerHTML = originalHtml;
-            event.target.value = '';
-        }
-    }
-    async uploadMultipleCvs(event) {
-        const files = event.target.files;
+    /**
+     * Procesa la carga de archivos CV en lote de manera asíncrona:
+     * 1. Genera batchId único (UUID)
+     * 2. Sube los archivos a Supabase Storage (bucket 'cvs')
+     * 3. Registra candidatos pendientes en Supabase (status: 'PENDING')
+     * 4. Notifica a n8n con payload JSON { batch_id: batchId }
+     */
+    async processAsyncCvBatch(files, event) {
         if (!files || files.length === 0) return;
 
-        const btnTextSpan = document.getElementById('uploadMultipleBtnText');
-        const originalHtml = btnTextSpan ? btnTextSpan.innerHTML : '';
-        if (btnTextSpan) {
-            btnTextSpan.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Procesando varios CVs...';
+        const vacanteId = this.currentVacanteId || document.getElementById('vacanteSelect')?.value;
+        if (!vacanteId) {
+            alert('Por favor selecciona una vacante antes de subir CVs.');
+            if (event?.target) event.target.value = '';
+            return;
         }
 
-        // Animación visual del Centro de Agentes (no bloqueante: corre en paralelo al upload real)
+        const btnTextSpan = document.getElementById('uploadBtnText') || document.getElementById('uploadMultipleBtnText');
+        const originalHtml = btnTextSpan ? btnTextSpan.innerHTML : '';
+        if (btnTextSpan) {
+            btnTextSpan.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Subiendo ${files.length} CV(s)...`;
+        }
+
+        // Simulación visual en Centro de Agentes
         if (window.app.agents) {
             window.app.agents.runCvPipelineSimulation(`${files.length} CV(s)`);
         }
 
-        let successCount = 0;
-        let failCount = 0;
+        try {
+            // 1. Generar Lote único
+            const batchId = crypto.randomUUID();
+            telemetry.info(`Iniciando lote asíncrono ${batchId} para ${files.length} archivo(s)...`, 'DASHBOARD');
 
-        for (const file of files) {
-            try {
-                const result = await n8nService.uploadCv(file, this.currentVacanteId);
-                if (result.success) {
-                    successCount++;
-                } else {
-                    failCount++;
+            // 2. Subir Archivos a Supabase Storage ('cvs')
+            const pendingRecords = [];
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const filePath = `${batchId}/${file.name}`;
+
+                if (btnTextSpan) {
+                    btnTextSpan.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Subiendo (${i + 1}/${files.length}): ${file.name}...`;
                 }
-            } catch (err) {
-                failCount++;
-                console.error(`Error uploading ${file.name}:`, err);
+
+                await supabaseService.uploadCvToStorage(filePath, file);
+
+                // 3. Preparar registro pendiente
+                pendingRecords.push({
+                    vacante_id: vacanteId,
+                    file_path: filePath,
+                    status: 'PENDING',
+                    batch_id: batchId
+                });
             }
+
+            // Registrar Candidatos Pendientes en base de datos
+            if (btnTextSpan) {
+                btnTextSpan.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Registrando candidatos en BD...';
+            }
+            await supabaseService.createPendingCandidates(pendingRecords);
+
+            // 4. Notificar a n8n (Payload JSON único)
+            if (btnTextSpan) {
+                btnTextSpan.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Notificando a n8n...';
+            }
+            const n8nResult = await n8nService.notifyBatchProcessing(batchId);
+
+            if (n8nResult.success) {
+                alert(`¡Lote procesado con éxito! Se subieron ${files.length} CV(s) y se notificó a n8n para análisis en segundo plano (Lote: ${batchId}).`);
+            } else {
+                alert(`Se registraron los archivos en Supabase, pero n8n respondió con estado ${n8nResult.status}. Revisa el flujo.`);
+            }
+
+            // Recargar candidatos de la vacante para reflejar los nuevos registros
+            await this.loadCandidates(vacanteId);
+
+        } catch (err) {
+            console.error('Error en el flujo de carga asíncrona:', err);
+            alert(`Error durante la carga de CVs: ${err.message}`);
+        } finally {
+            if (btnTextSpan) btnTextSpan.innerHTML = originalHtml;
+            if (event?.target) event.target.value = '';
         }
+    }
 
-        alert(`Subida completada. Éxitos: ${successCount}, Fallos: ${failCount}.`);
-        await this.loadCandidates(this.currentVacanteId);
+    async uploadCvFile(event) {
+        const files = event.target.files;
+        return this.processAsyncCvBatch(files, event);
+    }
 
-        if (btnTextSpan) btnTextSpan.innerHTML = originalHtml;
-        event.target.value = '';
+    async uploadMultipleCvs(event) {
+        const files = event.target.files;
+        return this.processAsyncCvBatch(files, event);
     }
 
 }

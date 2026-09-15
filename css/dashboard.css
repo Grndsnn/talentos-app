@@ -291,3 +291,146 @@ tr:hover td {
 .close-btn:hover {
     color: var(--text-primary);
 }
+
+/* ============================
+   Score Wheel (SVG Circular)
+   ============================ */
+.score-wheel-wrap {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 66px;
+    height: 66px;
+}
+
+.score-wheel-wrap svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.score-wheel-num {
+    position: relative;
+    font-size: 16px;
+    font-weight: 800;
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+    z-index: 1;
+}
+
+/* ============================
+   Gap Indicators
+   ============================ */
+.gap-none {
+    font-size: 12px;
+    font-weight: 600;
+    color: #059669;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
+}
+
+.gap-warn {
+    font-size: 12px;
+    font-weight: 600;
+    color: #d97706;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    white-space: nowrap;
+}
+
+.gap-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    background: #fff1f2;
+    color: #be123c;
+    border: 1px solid #fecdd3;
+    border-radius: 20px;
+    padding: 2px 9px;
+    margin-right: 3px;
+    white-space: nowrap;
+}
+
+/* ============================
+   Action Buttons
+   ============================ */
+.action-btns {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    align-items: center;
+}
+
+.action-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background: #f8fafc;
+    color: var(--text-muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    transition: all 0.15s ease;
+    flex-shrink: 0;
+}
+
+.action-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+}
+
+.action-btn--email:hover {
+    background: #eff6ff;
+    color: #1d4ed8;
+    border-color: #bfdbfe;
+}
+
+.action-btn--msg:hover {
+    background: #f0fdf4;
+    color: #059669;
+    border-color: #bbf7d0;
+}
+
+.action-btn--del:hover {
+    background: #fff1f2;
+    color: #be123c;
+    border-color: #fecdd3;
+}
+
+/* ============================
+   Candidate Cell
+   ============================ */
+.candidate-cell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.candidate-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+/* Card stat subtitle */
+.card-stat-sub {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
