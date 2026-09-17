@@ -205,16 +205,15 @@
             <div class="content" id="viewTalentos" style="display:none;">
 
                 <!-- Barra de acciones masivas -->
-                <div id="talentosToolbar" style="display:flex; align-items:center; justify-content:space-between; background:#fff; border:1px solid #e2e8f0; border-radius:10px; padding:10px 16px; box-shadow:0 1px 3px rgba(0,0,0,0.04);">
+                <div id="talentosToolbar"
+                    style="display:flex; align-items:center; justify-content:space-between; background:#fff; border:1px solid #e2e8f0; border-radius:10px; padding:10px 16px; box-shadow:0 1px 3px rgba(0,0,0,0.04);">
                     <span id="talentosSelCount" style="font-size:13px; color:#64748b; font-weight:500;">
                         <i class="fa-solid fa-users" style="color:#2563eb;"></i> Selecciona candidatos para eliminar
                     </span>
-                    <button id="btnDeleteSelected"
-                            onclick="window.app.dashboard.deleteSelectedTalentos()"
-                            disabled
-                            style="padding:7px 16px; border-radius:8px; border:1px solid #fecdd3; background:#fff; color:#be123c; font-size:12px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:7px; transition:0.2s; opacity:0.45;"
-                            onmouseover="if(!this.disabled){this.style.background='#ffe4e6';}"
-                            onmouseout="this.style.background='#fff'">
+                    <button id="btnDeleteSelected" onclick="window.app.dashboard.deleteSelectedTalentos()" disabled
+                        style="padding:7px 16px; border-radius:8px; border:1px solid #fecdd3; background:#fff; color:#be123c; font-size:12px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; gap:7px; transition:0.2s; opacity:0.45;"
+                        onmouseover="if(!this.disabled){this.style.background='#ffe4e6';}"
+                        onmouseout="this.style.background='#fff'">
                         <i class="fa-solid fa-trash-can"></i> Eliminar seleccionados
                     </button>
                 </div>
@@ -225,9 +224,9 @@
                             <tr>
                                 <th style="width:44px; text-align:center; padding:14px 10px;">
                                     <input type="checkbox" id="talentosSelectAll"
-                                           onchange="window.app.dashboard.toggleSelectAllTalentos(this.checked)"
-                                           title="Seleccionar todos"
-                                           style="width:15px; height:15px; cursor:pointer; accent-color:#1e3a8a;">
+                                        onchange="window.app.dashboard.toggleSelectAllTalentos(this.checked)"
+                                        title="Seleccionar todos"
+                                        style="width:15px; height:15px; cursor:pointer; accent-color:#1e3a8a;">
                                 </th>
                                 <th>Candidato</th>
                                 <th>Vacante</th>
