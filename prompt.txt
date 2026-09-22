@@ -1,0 +1,51 @@
+Crea por favor, una copia de este proyecto: C:\Users\Grdnsnn\se-arm-Project en esta carpeta raiz.
+
+[security-auditor.md](file;file:///c%3A/Users/Grdnsnn/Documents/Proyecto%20-%20Automind/.agents/agent/security-auditor.md) [seo-specialist.md](file;file:///c%3A/Users/Grdnsnn/Documents/Proyecto%20-%20Automind/.agents/agent/seo-specialist.md) [test-engineer.md](file;file:///c%3A/Users/Grdnsnn/Documents/Proyecto%20-%20Automind/.agents/agent/test-engineer.md) [backend-specialist.md](file;file:///c%3A/Users/Grdnsnn/Documents/Proyecto%20-%20Automind/.agents/agent/backend-specialist.md) [code-archaeologist.md](file;file:///c%3A/Users/Grdnsnn/Documents/Proyecto%20-%20Automind/.agents/agent/code-archaeologist.md) [database-architect.md](file;file:///c%3A/Users/Grdnsnn/Documents/Proyecto%20-%20Automind/.agents/agent/database-architect.md) [documentation-writer.md](file;file:///c%3A/Users/Grdnsnn/Documents/Proyecto%20-%20Automind/.agents/agent/documentation-writer.md) [frontend-specialist.md](file;file:///c%3A/Users/Grdnsnn/Documents/Proyecto%20-%20Automind/.agents/agent/frontend-specialist.md) [game-developer.md](file;file:///c%3A/Users/Grdnsnn/Documents/Proyecto%20-%20Automind/.agents/agent/game-developer.md) [orchestrator.md](file;file:///c%3A/Users/Grdnsnn/Documents/Proyecto%20-%20Automind/.agents/agent/orchestrator.md) 
+
+ROL Y CONTEXTO:
+Usa los agentes para realizar el mejor trabajo posible.
+El proyecto actual es "HoyJuego" (https://hoyjuego.vercel.app/), una plataforma gratuita para organizar partidos de fútbol. Vamos a incorporar un modelo SaaS B2B para dueños de canchas (ej. "Goles Manizales") con suscripción ($50k COP/mes + $2k por partido reservado).
+
+OBJETIVO TÉCNICO:
+Implementar el módulo B2B "SaaS Canchas" que incluye:
+1. Esquema de Base de Datos en Supabase (SQL & RLS).
+2. Dashboard de Administración para el dueño de la cancha.
+3. Módulo de Estadísticas y Análisis de Flujo.
+4. Integración de reservas automáticas y confirmaciones por WhatsApp vía Webhooks / n8n.
+
+TAREAS ESPECÍFICAS A DESARROLLAR:
+
+--- PASO 1: BASE DE DATOS (SUPABASE) ---
+Crea una migración SQL que incluya las siguientes tablas e índices:
+1. `canchas`: (id, owner_id, nombre, direccion, telefono_whatsapp, valor_hora, comision_fija, esta_activa, created_at).
+2. `espacios_cancha`: (id, cancha_id, nombre_subcancha, capacidad_personas [ej: 5v5, 8v8, 11v11]).
+3. `disponibilidad_horarios`: (id, cancha_id, dia_semana [0-6], hora_inicio, hora_fin, bloqueado_manualmente).
+4. `reservas_agendadas`: (id, evento_id, cancha_id, espacio_id, fecha_reserva, hora_inicio, hora_fin, estado ['pendiente', 'confirmada', 'cancelada'], monto_total, comision_cobrada).
+
+--- PASO 2: PANEL DE ADMINISTRACIÓN / DASHBOARD (NEXT.JS) ---
+Crea la ruta `/dashboard/cancha` accesible solo para el rol `owner_cancha`.
+Debe contar con:
+1. **Gestión de Agenda:** Calendario interactivo donde el dueño vea las horas ocupadas (por eventos de la app o bloqueos manuales) y pueda bloquear/desbloquear horarios al instante.
+2. **Panel de Estadísticas y Analítica:**
+   - Horarios "muertos" o con menor demanda (para sugerir promociones).
+   - Días y franjas horarias con mayor flujo de jugadores.
+   - Distribución por formato de cancha (ej: 5v5 vs 8v8).
+   - Recaudo total estimado ($) vs. Comisión acumulada a pagar.
+
+--- PASO 3: INTEGRACIÓN B2C A B2B (CREACIÓN DE EVENTO Y RESERVA) ---
+1. En el formulario de creación de eventos de la app pública, añade un selector dinámico de "Canchas Aliadas".
+2. Al seleccionar una cancha, filtra automáticamente los horarios disponibles leyendo la tabla `disponibilidad_horarios` y las reservas existentes.
+3. Al completarse los cupos del evento (ej: 10/10 jugadores), la app debe:
+   - Cambiar el estado de la reserva a 'confirmada'.
+   - Disparar un Webhook hacia n8n con la carga útil (Payload): datos del creador, cancha, hora, fecha, costo total y enlace directo del evento.
+
+--- PASO 4: INTEGRACIÓN WHATSAPP (N8N & MCP) ---
+1. Configura el Webhook en n8n para recibir el evento de "Reserva Confirmada".
+2. Mediante el MCP / WhatsApp Cloud API, enviar un mensaje estructurado tanto al administrador de la cancha como al grupo de WhatsApp del partido confirmando la cancha, el horario y la tarifa por persona.
+
+REGLAS DE CÓDIGO:
+- Usa componentes Server/Client estructurados limpiamente según Next.js App Router.
+- Asegura políticas de Row Level Security (RLS) en Supabase para que cada dueño de cancha solo pueda ver e interactuar con sus propios datos.
+- Sigue las buenas prácticas de diseño responsivo y UI limpia orientada a dispositivos móviles.
+
+No cambies la estructura ni la paleta de colores, usala

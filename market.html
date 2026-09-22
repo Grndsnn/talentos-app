@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoMind Analytics — Catálogo de Soluciones Agénticas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/space-grotesk@5.0.16/index.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.16/index.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'grotesk': ['"Space Grotesk"', 'sans-serif'],
+                        'inter': ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        'am-bg': '#05080f',
+                        'am-card': '#0c1220',
+                        'am-card2': '#111a2e',
+                        'am-border': '#1e2a44',
+                        'am-cyan': '#22d3ee',
+                        'am-violet': '#8b5cf6',
+                        'am-green': '#10b981',
+                        'am-amber': '#f59e0b',
+                        'am-text': '#e2e8f0',
+                        'am-muted': '#7c8db0',
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.4.0/dist/mermaid.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            mermaid.initialize({ startOnLoad: false, theme: 'dark' });
+        });
+    </script>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #05080f;
+            color: #e2e8f0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .glow-cyan {
+            box-shadow: 0 0 30px rgba(34, 211, 238, 0.15);
+        }
+
+        .glow-violet {
+            box-shadow: 0 0 30px rgba(139, 92, 246, 0.18);
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #22d3ee 0%, #8b5cf6 50%, #10b981 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .card-hover {
+            transition: all .25s ease;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-4px);
+            border-color: #22d3ee;
+            box-shadow: 0 10px 40px rgba(34, 211, 238, 0.12);
+        }
+
+        .fade-in {
+            animation: fadeIn .35s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .badge {
+            font-size: .68rem;
+            padding: .2rem .55rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            letter-spacing: .02em;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #05080f;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #1e2a44;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #22d3ee;
+        }
+    </style>
+</head>
+
+<body class="font-inter">
+
+    <!-- HEADER -->
+    <header class="sticky top-0 z-50 border-b border-am-border bg-am-bg/90 backdrop-blur-xl">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between flex-wrap gap-3">
+            <div class="flex items-center gap-3">
+                <div
+                    class="w-9 h-9 rounded-lg bg-gradient-to-br from-am-cyan to-am-violet flex items-center justify-center font-grotesk font-bold text-am-bg text-lg">
+                    A</div>
+                <div>
+                    <div class="font-grotesk font-bold text-lg leading-tight">AutoMind Analytics</div>
+                    <div class="text-xs text-am-muted">Catálogo Oficial de Soluciones Agénticas y Automatización</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 py-8">
+
+        <!-- HERO KPIs -->
+        <section class="mb-10 fade-in">
+            <div class="text-center mb-8">
+                <h1 class="font-grotesk font-bold text-3xl md:text-5xl mb-3"><span class="gradient-text">El Futuro
+                        Operativo</span></h1>
+                <p class="text-am-muted max-w-2xl mx-auto">Catálogo centralizado de soluciones de IA y Automatización,
+                    distribuidas por áreas de impacto y desarrolladas por nuestro equipo de expertos (Builders).</p>
+            </div>
+        </section>
+
+        <!-- SECCIÓN SOLUCIONES -->
+        <section id="sec-soluciones" class="section-panel fade-in">
+            <div class="flex items-center justify-between flex-wrap gap-3 mb-6">
+                <div>
+                    <h2 class="font-grotesk font-bold text-2xl">Catálogo de Soluciones</h2>
+                    <p class="text-am-muted text-sm">Filtra por categoría o descubre a los responsables (Builders)
+                        detrás de cada implementación.</p>
+                </div>
+                <div class="flex gap-2 flex-wrap" id="filtros-grupo"></div>
+            </div>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4" id="grid-soluciones"></div>
+        </section>
+
+    </main>
+
+    <!-- MODAL DETALLE SOLUCIÓN -->
+    <div id="modal-solucion" class="hidden fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm overflow-y-auto">
+        <div class="max-w-4xl mx-auto px-4 py-8">
+            <div class="bg-am-card border border-am-border rounded-2xl overflow-hidden">
+                <div class="flex items-center justify-between p-6 border-b border-am-border">
+                    <div>
+                        <div class="flex items-center gap-2 mb-1">
+                            <div class="text-xs text-am-cyan" id="modal-grupo"></div>
+                            <span class="text-am-muted text-xs">•</span>
+                            <div class="text-xs font-semibold text-am-violet flex items-center gap-1"
+                                id="modal-builder"></div>
+                        </div>
+                        <h3 class="font-grotesk font-bold text-xl" id="modal-titulo"></h3>
+                    </div>
+                    <button onclick="cerrarModal()"
+                        class="w-9 h-9 rounded-lg bg-am-card2 border border-am-border flex items-center justify-center hover:border-am-cyan transition text-am-muted">✕</button>
+                </div>
+                <div class="p-6 space-y-6" id="modal-body"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const soluciones = [
+            // COMERCIO - ESTEBAN
+            {
+                id: 1, urlRepo: '#', urlApp: '#', grupo: 'A', builder: 'Esteban', nombre: 'Predicción de Quiebres de Stock', icono: '📦',
+                dolor: 'Tu bodega se queda sin inventario y te enteras cuando el cliente ya canceló.',
+                descripcion: 'KNIME analiza el histórico de ventas de Shopify y Odoo para proyectar quiebres. n8n envía alertas preventivas.',
+                arquitectura: [{ tool: 'Shopify', rol: 'Ventas' }, { tool: 'Odoo', rol: 'Inventario' }, { tool: 'KNIME', rol: 'Predictivo' }, { tool: 'n8n', rol: 'Alertas' }],
+                fases: [
+                    { fase: 'Conexión', duracion: 'Sem 1', tareas: ['APIs Shopify y Odoo', 'Espejo Supabase'] },
+                    { fase: 'Modelo KNIME', duracion: 'Sem 2', tareas: ['Workflow KNIME', 'Proyección 30 días'] },
+                    { fase: 'Alertas', duracion: 'Sem 3', tareas: ['n8n cron', 'Bot Telegram'] }
+                ],
+                infra: ['KNIME', 'n8n', 'Supabase'], entregable: 'Dashboard con semáforo por SKU.',
+                ahorroHoras: 25, ahorroMes: 4500000, rolAfectado: 'Jefe de bodega', setupMin: 3800000, setupMax: 5500000, mensualMin: 850000, mensualMax: 1300000, soporte: 450000, tiempoImpl: '3-4 sem', payback: '3-4 meses'
+            },
+            {
+                id: 2, urlRepo: '#', urlApp: '#', grupo: 'A', builder: 'Esteban', nombre: 'Precios Dinámicos Inteligentes', icono: '🏷️',
+                dolor: 'Tu competencia ajusta precios y pierdes margen o ventas por ser lento.',
+                descripcion: 'Apify extrae precios competidores, KNIME calcula precio óptimo según margen y n8n actualiza la tienda.',
+                arquitectura: [{ tool: 'Apify', rol: 'Scraping' }, { tool: 'KNIME', rol: 'Pricing' }, { tool: 'n8n', rol: 'Update Shopify' }],
+                fases: [
+                    { fase: 'Scraping', duracion: 'Sem 1', tareas: ['Actor Apify', 'Supabase'] },
+                    { fase: 'Lógica', duracion: 'Sem 2', tareas: ['Cálculo margen', 'Comparativo'] },
+                    { fase: 'Update', duracion: 'Sem 3', tareas: ['API Update', 'Auditoría'] }
+                ],
+                infra: ['Apify', 'KNIME', 'n8n'], entregable: 'Dashboard de Inteligencia Competitiva.',
+                ahorroHoras: 30, ahorroMes: 7000000, rolAfectado: 'Gerente comercial', setupMin: 4500000, setupMax: 6500000, mensualMin: 1000000, mensualMax: 1600000, soporte: 500000, tiempoImpl: '4 sem', payback: '3 meses'
+            },
+            {
+                id: 3, urlRepo: '#', urlApp: '#', grupo: 'A', builder: 'Esteban', nombre: 'Auditoría de Fletes', icono: '🚚',
+                dolor: 'Las transportadoras cobran sobrecostos que nadie audita.',
+                descripcion: 'KNIME cruza PDFs de facturas vs tarifas negociadas para detectar cobros excesivos.',
+                arquitectura: [{ tool: 'Tika', rol: 'Extracción' }, { tool: 'KNIME', rol: 'Cruce' }, { tool: 'n8n', rol: 'Alertas' }],
+                fases: [
+                    { fase: 'Ingesta', duracion: 'Sem 1', tareas: ['Tika Parser', 'Email trigger'] },
+                    { fase: 'Cruce', duracion: 'Sem 2', tareas: ['Tarifas Supabase', 'Matching'] },
+                    { fase: 'Reporte', duracion: 'Sem 3', tareas: ['Dashboard', 'Alertas'] }
+                ],
+                infra: ['KNIME', 'n8n', 'Supabase'], entregable: 'Reporte de fugas por transportadora.',
+                ahorroHoras: 20, ahorroMes: 3000000, rolAfectado: 'Logística', setupMin: 3800000, setupMax: 5200000, mensualMin: 900000, mensualMax: 1350000, soporte: 450000, tiempoImpl: '3-4 sem', payback: '2-3 meses'
+            },
+            {
+                id: 4, urlRepo: '#', urlApp: '#', grupo: 'A', builder: 'Esteban', nombre: 'Rastreo Multicanal', icono: '📍',
+                dolor: 'Soporte abre 5 pestañas de correos para ver estados de guías.',
+                descripcion: 'Centralización de rastreo de múltiples transportadoras en una sola UI usando n8n.',
+                arquitectura: [{ tool: 'APIs Transportadoras', rol: 'Estados' }, { tool: 'n8n', rol: 'Orquestador' }, { tool: 'Supabase', rol: 'UI' }],
+                fases: [
+                    { fase: 'APIs', duracion: 'Sem 1', tareas: ['Conexión', 'Webhooks'] },
+                    { fase: 'Estandarización', duracion: 'Sem 2', tareas: ['KNIME Mapping', 'Reglas'] },
+                    { fase: 'Interfaz', duracion: 'Sem 3', tareas: ['UI Búsqueda', 'Alertas SMS'] }
+                ],
+                infra: ['n8n', 'Supabase', 'KNIME'], entregable: 'Panel centralizado de guías.',
+                ahorroHoras: 45, ahorroMes: 6000000, rolAfectado: 'Soporte', setupMin: 4800000, setupMax: 6800000, mensualMin: 1100000, mensualMax: 1700000, soporte: 550000, tiempoImpl: '4 sem', payback: '2-3 meses'
+            },
+            {
+                id: 5, urlRepo: '#', urlApp: '#', grupo: 'A', builder: 'Esteban', nombre: 'Recuperación de Carritos IA', icono: '🛒',
+                dolor: 'Correos genéricos no recuperan carritos abandonados.',
+                descripcion: 'Generación de copys únicos vía DeepSeek para recuperar carritos según scoring de KNIME.',
+                arquitectura: [{ tool: 'KNIME', rol: 'Scoring' }, { tool: 'DeepSeek', rol: 'Copy' }, { tool: 'n8n', rol: 'Secuencia' }],
+                fases: [
+                    { fase: 'Eventos', duracion: 'Sem 1', tareas: ['Tracking Shopify', 'Supabase'] },
+                    { fase: 'IA', duracion: 'Sem 2', tareas: ['Prompting', 'Scoring'] },
+                    { fase: 'Mails', duracion: 'Sem 3', tareas: ['n8n Mailing', 'Twenty CRM'] }
+                ],
+                infra: ['DeepSeek', 'n8n', 'Twenty CRM'], entregable: 'Dashboard de recuperación.',
+                ahorroHoras: 15, ahorroMes: 5000000, rolAfectado: 'Marketing', setupMin: 3200000, setupMax: 4800000, mensualMin: 850000, mensualMax: 1250000, soporte: 400000, tiempoImpl: '3 sem', payback: '1-2 meses'
+            },
+
+            // VENTAS CRM - JESSIK
+            {
+                id: 6, urlRepo: '#', urlApp: '#', grupo: 'B', builder: 'Jessik', nombre: 'Lead Scoring Predictivo', icono: '🎯',
+                dolor: 'Vendedores llaman a leads sin potencial.',
+                descripcion: 'KNIME asigna un score de cierre (0-100) a los leads en Twenty CRM.',
+                arquitectura: [{ tool: 'Twenty CRM', rol: 'Datos' }, { tool: 'KNIME', rol: 'Modelo' }, { tool: 'Telegram', rol: 'Notificación' }],
+                fases: [
+                    { fase: 'Auditoría', duracion: 'Sem 1', tareas: ['Limpieza CRM'] },
+                    { fase: 'Modelo', duracion: 'Sem 2', tareas: ['Variables', 'Scoring'] },
+                    { fase: 'Distribución', duracion: 'Sem 3', tareas: ['n8n Telegram', 'Pipeline'] }
+                ],
+                infra: ['KNIME', 'n8n', 'Twenty CRM'], entregable: 'Pipeline de Calor en CRM.',
+                ahorroHoras: 25, ahorroMes: 8000000, rolAfectado: 'Comercial', setupMin: 4000000, setupMax: 6000000, mensualMin: 950000, mensualMax: 1500000, soporte: 500000, tiempoImpl: '4 sem', payback: '2 meses'
+            },
+            {
+                id: 7, urlRepo: '#', urlApp: '#', grupo: 'B', builder: 'Jessik', nombre: 'Onboarding Inmediato B2B', icono: '🚀',
+                dolor: 'Pasar a un cliente de "Ganado" a estar operativo tarda días.',
+                descripcion: 'n8n detecta el cierre en CRM, crea proyecto en Odoo y despliega infra.',
+                arquitectura: [{ tool: 'Twenty CRM', rol: 'Trigger' }, { tool: 'n8n', rol: 'Orquestador' }, { tool: 'Odoo', rol: 'Proyecto' }],
+                fases: [
+                    { fase: 'Trigger', duracion: 'Sem 1', tareas: ['Webhooks CRM', 'Validaciones'] },
+                    { fase: 'Odoo', duracion: 'Sem 2', tareas: ['Creación automática', 'Tareas'] },
+                    { fase: 'Comms', duracion: 'Sem 3', tareas: ['Email bienvenida', 'Credenciales'] }
+                ],
+                infra: ['n8n', 'Twenty CRM', 'Odoo'], entregable: 'Dashboard Onboarding.',
+                ahorroHoras: 30, ahorroMes: 4000000, rolAfectado: 'Operaciones', setupMin: 3200000, setupMax: 4800000, mensualMin: 800000, mensualMax: 1200000, soporte: 400000, tiempoImpl: '3 sem', payback: '2 meses'
+            },
+            {
+                id: 8, urlRepo: '#', urlApp: '#', grupo: 'B', builder: 'Jessik', nombre: 'Reactivación de Leads Fríos', icono: '🔥',
+                dolor: 'Leads antiguos muertos en el CRM.',
+                descripcion: 'Campañas automatizadas por WhatsApp a leads fríos usando mensajes IA.',
+                arquitectura: [{ tool: 'Twenty CRM', rol: 'Filtro' }, { tool: 'DeepSeek', rol: 'Mensaje' }, { tool: 'WhatsApp API', rol: 'Envío' }],
+                fases: [
+                    { fase: 'Segmentación', duracion: 'Sem 1', tareas: ['KNIME Filtro', 'Agrupación'] },
+                    { fase: 'Mensajes', duracion: 'Sem 2', tareas: ['DeepSeek copy', 'Validación'] },
+                    { fase: 'Disparo', duracion: 'Sem 3', tareas: ['n8n WhatsApp', 'Respuestas'] }
+                ],
+                infra: ['DeepSeek', 'n8n', 'WhatsApp API'], entregable: 'Reporte Reactivación.',
+                ahorroHoras: 15, ahorroMes: 4000000, rolAfectado: 'Marketing', setupMin: 2600000, setupMax: 3800000, mensualMin: 700000, mensualMax: 1000000, soporte: 350000, tiempoImpl: '2-3 sem', payback: '1-2 meses'
+            },
+            {
+                id: 9, urlRepo: '#', urlApp: '#', grupo: 'B', builder: 'Jessik', nombre: 'Enriquecimiento Automático', icono: '🔍',
+                dolor: 'SDRs pierden tiempo en LinkedIn buscando decisores.',
+                descripcion: 'Al registrar un dominio en CRM, Apify extrae perfiles LinkedIn e inyecta contactos.',
+                arquitectura: [{ tool: 'Apify', rol: 'Scraping' }, { tool: 'n8n', rol: 'Inyección' }, { tool: 'Twenty CRM', rol: 'Recepción' }],
+                fases: [
+                    { fase: 'Trigger', duracion: 'Sem 1', tareas: ['Domain hook'] },
+                    { fase: 'Actor', duracion: 'Sem 2', tareas: ['Apify LinkedIn'] },
+                    { fase: 'Inyección', duracion: 'Sem 3', tareas: ['Upsert Contacts CRM'] }
+                ],
+                infra: ['Apify', 'n8n', 'Twenty CRM'], entregable: 'Dashboard contactos enriquecidos.',
+                ahorroHoras: 20, ahorroMes: 3500000, rolAfectado: 'SDRs', setupMin: 2800000, setupMax: 4200000, mensualMin: 750000, mensualMax: 1100000, soporte: 350000, tiempoImpl: '3 sem', payback: '2-3 meses'
+            },
+            {
+                id: 10, urlRepo: '#', urlApp: '#', grupo: 'B', builder: 'Jessik', nombre: 'Predictivo de Abandono', icono: '📉',
+                dolor: 'Clientes cancelan sin previo aviso.',
+                descripcion: 'KNIME detecta riesgo de churn basado en uso y tickets, n8n crea tarea preventiva.',
+                arquitectura: [{ tool: 'Supabase', rol: 'Señales' }, { tool: 'KNIME', rol: 'Riesgo' }, { tool: 'n8n', rol: 'Tareas' }],
+                fases: [
+                    { fase: 'Datos', duracion: 'Sem 1', tareas: ['Histórico'] },
+                    { fase: 'Riesgo', duracion: 'Sem 2', tareas: ['Clasificación', 'Score'] },
+                    { fase: 'Retención', duracion: 'Sem 3', tareas: ['Tareas CRM', 'Notificaciones'] }
+                ],
+                infra: ['KNIME', 'Twenty CRM'], entregable: 'Alertas Semáforo de Fuga.',
+                ahorroHoras: 20, ahorroMes: 10000000, rolAfectado: 'Customer Success', setupMin: 4500000, setupMax: 6500000, mensualMin: 1100000, mensualMax: 1700000, soporte: 550000, tiempoImpl: '4 sem', payback: '1-2 meses'
+            },
+
+            // AGENDAMIENTO & CHAT - ANDRES
+            {
+                id: 11, urlRepo: '#', urlApp: '#', grupo: 'C', builder: 'Andrés', nombre: 'Agendamiento Dinámico', icono: '📅',
+                dolor: 'Caos coordinando agendas por WhatsApp.',
+                descripcion: 'Integración de reservas con verificación cruzada en tiempo real usando Cal.com y Odoo.',
+                arquitectura: [{ tool: 'Cal.com', rol: 'Slots' }, { tool: 'n8n', rol: 'Sync' }, { tool: 'Odoo', rol: 'Operación' }],
+                fases: [
+                    { fase: 'Interfaz', duracion: 'Sem 1', tareas: ['Reserva', 'Forms'] },
+                    { fase: 'Motor', duracion: 'Sem 2', tareas: ['Cal.com Sync', 'Reglas'] },
+                    { fase: 'Odoo', duracion: 'Sem 3', tareas: ['Comisiones', 'Notificaciones'] }
+                ],
+                infra: ['Cal.com', 'n8n', 'Odoo'], entregable: 'Portal de Reservas.',
+                ahorroHoras: 50, ahorroMes: 7000000, rolAfectado: 'Recepción', setupMin: 5000000, setupMax: 7500000, mensualMin: 1200000, mensualMax: 1900000, soporte: 600000, tiempoImpl: '4 sem', payback: '2 meses'
+            },
+            {
+                id: 12, urlRepo: '#', urlApp: '#', grupo: 'C', builder: 'Andrés', nombre: 'Recepcionista Virtual (Voice AI)', icono: '🎙️',
+                dolor: 'Se pierden llamadas fuera de horario o cuando las líneas están ocupadas.',
+                descripcion: 'Agente de voz que contesta llamadas 24/7, resuelve dudas frecuentes y agenda citas en Cal.com.',
+                arquitectura: [{ tool: 'Vapi/BlandAI', rol: 'Voz' }, { tool: 'n8n', rol: 'Ruteo' }, { tool: 'Cal.com', rol: 'Agendamiento' }],
+                fases: [
+                    { fase: 'Telefonía', duracion: 'Sem 1', tareas: ['Sip Trunk', 'Config Números'] },
+                    { fase: 'Agente', duracion: 'Sem 2', tareas: ['Prompt Voz', 'Knowledge Base'] },
+                    { fase: 'Acciones', duracion: 'Sem 3', tareas: ['Booking API', 'Transcripciones CRM'] }
+                ],
+                infra: ['Voice AI', 'n8n', 'Cal.com'], entregable: 'Agente telefónico activo con log de llamadas.',
+                ahorroHoras: 80, ahorroMes: 5000000, rolAfectado: 'Call Center / Recepción', setupMin: 6000000, setupMax: 9000000, mensualMin: 1500000, mensualMax: 2500000, soporte: 500000, tiempoImpl: '4 sem', payback: '2-3 meses'
+            },
+            {
+                id: 13, urlRepo: '#', urlApp: '#', grupo: 'C', builder: 'Andrés', nombre: 'Chatbot Soporte Omnicanal', icono: '🤖',
+                dolor: 'El equipo responde las mismas 20 preguntas por WhatsApp y Redes Sociales todo el día.',
+                descripcion: 'Chatbot inteligente que califica leads y da soporte técnico conectándose al ERP/CRM.',
+                arquitectura: [{ tool: 'Flowise/Langflow', rol: 'Bot' }, { tool: 'WhatsApp', rol: 'Canal' }, { tool: 'DeepSeek', rol: 'LLM' }],
+                fases: [
+                    { fase: 'Base Datos', duracion: 'Sem 1', tareas: ['Vector DB', 'Ingesta Docs'] },
+                    { fase: 'Bot', duracion: 'Sem 2', tareas: ['RAG Pipeline', 'Integración WA'] },
+                    { fase: 'Handoff', duracion: 'Sem 3', tareas: ['Paso a humano', 'Tickets CRM'] }
+                ],
+                infra: ['LLM', 'Vector DB', 'WhatsApp API'], entregable: 'Bot funcionando en WA e IG.',
+                ahorroHoras: 60, ahorroMes: 4500000, rolAfectado: 'Soporte Nivel 1', setupMin: 4000000, setupMax: 6000000, mensualMin: 1200000, mensualMax: 1800000, soporte: 450000, tiempoImpl: '3 sem', payback: '2 meses'
+            },
+            {
+                id: 14, urlRepo: '#', urlApp: '#', grupo: 'C', builder: 'Andrés', nombre: 'Proyección de Compras', icono: '🍔',
+                dolor: 'Sobran insumos o faltan en horas pico en el restaurante.',
+                descripcion: 'Modelo predictivo que cruza ventas y clima para sugerir compras semanales.',
+                arquitectura: [{ tool: 'Odoo', rol: 'Ventas' }, { tool: 'KNIME', rol: 'Demanda' }, { tool: 'OpenWeather', rol: 'Clima' }],
+                fases: [
+                    { fase: 'Datos', duracion: 'Sem 1', tareas: ['Histórico'] },
+                    { fase: 'Demanda', duracion: 'Sem 2', tareas: ['Modelo clima', 'Festivos'] },
+                    { fase: 'Reporte', duracion: 'Sem 3', tareas: ['PDF semanal'] }
+                ],
+                infra: ['KNIME', 'OpenWeather'], entregable: 'Proyección semanal.',
+                ahorroHoras: 20, ahorroMes: 4000000, rolAfectado: 'Gerente restaurante', setupMin: 3800000, setupMax: 5500000, mensualMin: 900000, mensualMax: 1350000, soporte: 450000, tiempoImpl: '3-4 sem', payback: '2-3 meses'
+            },
+            {
+                id: 15, urlRepo: '#', urlApp: '#', grupo: 'C', builder: 'Andrés', nombre: 'Auditoría de Tiempos', icono: '⏱️',
+                dolor: 'Cuellos de botella no detectados en logística o cocina.',
+                descripcion: 'Análisis de timestamps de operaciones para detectar desviaciones de SLA.',
+                arquitectura: [{ tool: 'Odoo', rol: 'Logs' }, { tool: 'KNIME', rol: 'Análisis' }, { tool: 'Supabase', rol: 'Almacenaje' }],
+                fases: [
+                    { fase: 'Logs', duracion: 'Sem 1', tareas: ['Timestamps'] },
+                    { fase: 'Cuellos', duracion: 'Sem 2', tareas: ['Desviación estándar'] },
+                    { fase: 'Dashboard', duracion: 'Sem 3', tareas: ['Heatmap horas pico'] }
+                ],
+                infra: ['KNIME', 'Odoo'], entregable: 'Heatmap operativo.',
+                ahorroHoras: 18, ahorroMes: 3000000, rolAfectado: 'Gerencia Operaciones', setupMin: 3200000, setupMax: 4600000, mensualMin: 800000, mensualMax: 1200000, soporte: 400000, tiempoImpl: '3 sem', payback: '2-3 meses'
+            },
+
+            // RRHH - DAVID
+            {
+                id: 16, urlRepo: '#', urlApp: '#', grupo: 'D', builder: 'David', nombre: 'Talent Intelligence OS', icono: '🧠',
+                dolor: 'Leer cientos de PDFs de currículums a mano.',
+                descripcion: 'Plataforma modular con interfaz web y 6 agentes autónomos (AG Kit). Ingesta vía n8n y análisis de talento.',
+                n8nFlow: `graph TD
+    A[Webhook] --> B[Read PDF]
+    B --> C[Get Vacante Info]
+    C --> D[Preparar Vacante]
+    D --> E[Gemini 3.6 Flash]
+    E --> F[Formatear Datos]
+    F --> G[Guardar en Supabase]
+    classDef trigger fill:#8b5cf6,stroke:#7c3aed,stroke-width:2px,color:#fff;
+    classDef action fill:#0891b2,stroke:#06b6d4,stroke-width:2px,color:#fff;
+    classDef api fill:#059669,stroke:#10b981,stroke-width:2px,color:#fff;
+    classDef ai fill:#d97706,stroke:#f59e0b,stroke-width:2px,color:#fff;
+    class A trigger;
+    class B,D,F action;
+    class C,G api;
+    class E ai;`,
+                arquitectura: [{ tool: 'Node.js', rol: 'Servidor' }, { tool: 'Supabase', rol: 'Datos' }, { tool: 'AG Kit', rol: '6 Agentes' }, { tool: 'n8n', rol: 'Ingesta CV' }],
+                fases: [
+                    { fase: 'UI & Core', duracion: 'Sem 1', tareas: ['Dashboard Modular', 'Telemetría'] },
+                    { fase: 'Agentes', duracion: 'Sem 2', tareas: ['Setup AG Kit', 'DeepSeek (<100 CVs)'] },
+                    { fase: 'Mejora (KNIME)', duracion: 'Sem 3', tareas: ['Scoring grandes lotes (500+ CVs)', 'Modelo predictivo KNIME'] }
+                ],
+                infra: ['Node.js', 'Supabase', 'AG Kit', 'n8n'], entregable: 'Centro de Agentes y Dashboard Modular.',
+                ahorroHoras: 80, ahorroMes: 12000000, rolAfectado: 'RRHH', setupMin: 5500000, setupMax: 8500000, mensualMin: 1300000, mensualMax: 2200000, soporte: 650000, tiempoImpl: '4 sem', payback: '1-2 meses'
+            },
+            {
+                id: 17, urlRepo: '#', urlApp: '#', grupo: 'D', builder: 'David', nombre: 'Agendamiento Autónomo', icono: '🗓️',
+                dolor: 'Perder días coordinando horarios con candidatos.',
+                descripcion: 'Envío automático de links Cal.com a candidatos con score > 80.',
+                arquitectura: [{ tool: 'Twenty CRM', rol: 'Score' }, { tool: 'Cal.com', rol: 'Slots' }, { tool: 'n8n', rol: 'Envío' }],
+                fases: [
+                    { fase: 'Trigger', duracion: 'Sem 1', tareas: ['Webhooks >80'] },
+                    { fase: 'Cal.com', duracion: 'Sem 2', tareas: ['Calendarios'] },
+                    { fase: 'Tracking', duracion: 'Sem 3', tareas: ['No-shows dashboard'] }
+                ],
+                infra: ['n8n', 'Cal.com'], entregable: 'Panel de Entrevistas.',
+                ahorroHoras: 15, ahorroMes: 2000000, rolAfectado: 'Reclutador', setupMin: 2200000, setupMax: 3400000, mensualMin: 600000, mensualMax: 900000, soporte: 300000, tiempoImpl: '2 sem', payback: '2 meses'
+            },
+            {
+                id: 18, urlRepo: '#', urlApp: '#', grupo: 'D', builder: 'David', nombre: 'Evaluación 360 IA', icono: '📊',
+                dolor: 'Evaluaciones que terminan en Excels que nadie lee.',
+                descripcion: 'Consolidación de encuestas de clima, con resumen narrativo por IA para cada empleado.',
+                arquitectura: [{ tool: 'Forms', rol: 'Datos' }, { tool: 'KNIME', rol: 'Cálculo' }, { tool: 'DeepSeek', rol: 'Narrativa' }],
+                fases: [
+                    { fase: 'Encuestas', duracion: 'Sem 1', tareas: ['Setup forms'] },
+                    { fase: 'Cálculos', duracion: 'Sem 2', tareas: ['Promedios KNIME'] },
+                    { fase: 'IA', duracion: 'Sem 3', tareas: ['Feedback constructivo'] }
+                ],
+                infra: ['KNIME', 'DeepSeek'], entregable: 'Radar de Talento.',
+                ahorroHoras: 25, ahorroMes: 4000000, rolAfectado: 'Líderes RRHH', setupMin: 3800000, setupMax: 5500000, mensualMin: 900000, mensualMax: 1300000, soporte: 450000, tiempoImpl: '3 sem', payback: '2-3 meses'
+            },
+
+            // DATA SCIENCE & ANALITICA - BRAHIAN
+            {
+                id: 19, urlRepo: '#', urlApp: '#', grupo: 'E', builder: 'Brahian', nombre: 'Analista de Datos Autónomo', icono: '📈',
+                dolor: 'Esperar semanas a que TI genere un reporte en Excel.',
+                descripcion: 'Agente autónomo que consulta bases de datos SQL usando lenguaje natural y genera dashboards dinámicos.',
+                arquitectura: [{ tool: 'Supabase', rol: 'Datos' }, { tool: 'DeepSeek', rol: 'Text-to-SQL' }, { tool: 'Streamlit', rol: 'Dashboards' }],
+                fases: [
+                    { fase: 'Conexión', duracion: 'Sem 1', tareas: ['Mapeo de Schemas', 'Permisos'] },
+                    { fase: 'Text-to-SQL', duracion: 'Sem 2', tareas: ['Agente LLM', 'Validaciones'] },
+                    { fase: 'Visuales', duracion: 'Sem 3', tareas: ['Generación gráficos Automáticos'] }
+                ],
+                infra: ['LLM', 'Streamlit', 'PostgreSQL'], entregable: 'Portal de Business Intelligence conversacional.',
+                ahorroHoras: 50, ahorroMes: 8000000, rolAfectado: 'Ejecutivos / Analistas', setupMin: 6500000, setupMax: 9500000, mensualMin: 1500000, mensualMax: 2500000, soporte: 550000, tiempoImpl: '4 sem', payback: '2 meses'
+            },
+            {
+                id: 20, urlRepo: '#', urlApp: '#', grupo: 'E', builder: 'Brahian', nombre: 'Data Scientist Predictivo', icono: '🔮',
+                dolor: 'Tomar decisiones críticas basadas en intuición en lugar de datos proyectados.',
+                descripcion: 'Modelos de Machine Learning (Random Forest, XGBoost) implementados para predecir ventas y tendencias.',
+                arquitectura: [{ tool: 'Python/Pandas', rol: 'ETL' }, { tool: 'Scikit-Learn', rol: 'Modelo' }, { tool: 'FastAPI', rol: 'Inferencia' }],
+                fases: [
+                    { fase: 'ETL', duracion: 'Sem 1-2', tareas: ['Limpieza de outliers', 'Features'] },
+                    { fase: 'Train', duracion: 'Sem 3', tareas: ['Entrenamiento ML', 'Tuning'] },
+                    { fase: 'Deploy', duracion: 'Sem 4', tareas: ['API Predictiva', 'Dashboard'] }
+                ],
+                infra: ['Python', 'MLOps', 'FastAPI'], entregable: 'API predictiva y tablero de decisiones.',
+                ahorroHoras: 40, ahorroMes: 15000000, rolAfectado: 'Director General', setupMin: 8000000, setupMax: 12000000, mensualMin: 2000000, mensualMax: 3500000, soporte: 800000, tiempoImpl: '6 sem', payback: '2-3 meses'
+            },
+            {
+                id: 21, urlRepo: '#', urlApp: '#', grupo: 'E', builder: 'Brahian', nombre: 'Ingeniero Automatizado QA', icono: '⚙️',
+                dolor: 'Datos corruptos, nulos o duplicados que arruinan reportes y causan errores operativos.',
+                descripcion: 'Pipelines de calidad de datos automáticos (Great Expectations) que alertan si la data falla antes de usarse.',
+                arquitectura: [{ tool: 'Great Expectations', rol: 'QA' }, { tool: 'Airflow', rol: 'Orquestador' }, { tool: 'Slack', rol: 'Alertas' }],
+                fases: [
+                    { fase: 'Reglas', duracion: 'Sem 1', tareas: ['Definición tests', 'Esquemas'] },
+                    { fase: 'Pipelines', duracion: 'Sem 2', tareas: ['Validación diaria', 'Logs'] },
+                    { fase: 'Alertas', duracion: 'Sem 3', tareas: ['Notificación fallos', 'Cuarentena'] }
+                ],
+                infra: ['Airflow', 'Python Data'], entregable: 'Monitoreo de Salud de Datos.',
+                ahorroHoras: 25, ahorroMes: 5000000, rolAfectado: 'Data Engineers', setupMin: 4500000, setupMax: 6500000, mensualMin: 1000000, mensualMax: 1500000, soporte: 400000, tiempoImpl: '3 sem', payback: '2 meses'
+            },
+
+            // GESTION E INTERNA - VARIOS
+            {
+                id: 22, urlRepo: '#', urlApp: '#', grupo: 'F', builder: 'Esteban', nombre: 'Conciliación Bancaria', icono: '🏦',
+                dolor: 'Contadores cruzan extractos bancarios con facturas a mano.',
+                descripcion: 'Matching difuso de CSVs bancarios contra facturas emitidas en Odoo.',
+                arquitectura: [{ tool: 'Drive', rol: 'CSVs' }, { tool: 'KNIME', rol: 'Matching' }, { tool: 'Odoo', rol: 'Facturas' }],
+                fases: [
+                    { fase: 'Ingesta', duracion: 'Sem 1', tareas: ['Carpetas', 'Validación'] },
+                    { fase: 'Matching', duracion: 'Sem 2', tareas: ['Lógica difusa', 'Conciliado'] },
+                    { fase: 'Update', duracion: 'Sem 3', tareas: ['Pagos Odoo'] }
+                ],
+                infra: ['KNIME', 'Odoo'], entregable: 'Reporte Conciliación.',
+                ahorroHoras: 35, ahorroMes: 4500000, rolAfectado: 'Contador', setupMin: 3600000, setupMax: 5200000, mensualMin: 850000, mensualMax: 1300000, soporte: 450000, tiempoImpl: '3 sem', payback: '2 meses'
+            },
+            {
+                id: 23, urlRepo: '#', urlApp: '#', grupo: 'F', builder: 'Jessik', nombre: 'Consolidación Rentabilidad', icono: '💰',
+                dolor: 'No sabes qué clientes dan ganancia y cuáles pérdida.',
+                descripcion: 'Cruce de costos fijos de infra vs igualas en tiempo real.',
+                arquitectura: [{ tool: 'Hostinger', rol: 'Costos' }, { tool: 'Odoo', rol: 'Ingresos' }, { tool: 'KNIME', rol: 'Cálculo' }],
+                fases: [
+                    { fase: 'Costos', duracion: 'Sem 1', tareas: ['APIs Infra', 'Precios'] },
+                    { fase: 'Ingresos', duracion: 'Sem 2', tareas: ['Odoo billing'] },
+                    { fase: 'Dashboard', duracion: 'Sem 3', tareas: ['Cascada margen'] }
+                ],
+                infra: ['KNIME', 'Odoo'], entregable: 'Dashboard Ejecutivo de Margen.',
+                ahorroHoras: 20, ahorroMes: 3000000, rolAfectado: 'Director Financiero', setupMin: 2800000, setupMax: 4000000, mensualMin: 700000, mensualMax: 1000000, soporte: 350000, tiempoImpl: '3 sem', payback: '2-3 meses'
+            },
+            {
+                id: 24, urlRepo: '#', urlApp: '#', grupo: 'F', builder: 'Andrés', nombre: 'Programa de Lealtad Omnicanal', icono: '🎁',
+                dolor: 'Clientes frecuentes no reciben beneficios.',
+                descripcion: 'Consolidación compras POS y Digital para emisión de cupones por SMS.',
+                arquitectura: [{ tool: 'Odoo/Shopify', rol: 'Datos' }, { tool: 'KNIME', rol: 'Niveles' }, { tool: 'SMS', rol: 'Cupones' }],
+                fases: [
+                    { fase: 'Unificación', duracion: 'Sem 1', tareas: ['Conexión POS/Web'] },
+                    { fase: 'Umbrales', duracion: 'Sem 2', tareas: ['KNIME cálculo', 'Niveles'] },
+                    { fase: 'Emisión', duracion: 'Sem 3', tareas: ['SMS Gateway'] }
+                ],
+                infra: ['KNIME', 'SMS Gateway'], entregable: 'Panel Retención.',
+                ahorroHoras: 15, ahorroMes: 6000000, rolAfectado: 'Gerencia', setupMin: 4200000, setupMax: 6000000, mensualMin: 1000000, mensualMax: 1500000, soporte: 500000, tiempoImpl: '4 sem', payback: '2 meses'
+            },
+            {
+                id: 25, urlRepo: '#', urlApp: '#', grupo: 'F', builder: 'David', nombre: 'Gestión de Reputación IA', icono: '⭐',
+                dolor: 'Reseñas negativas sin responder cuestan reputación.',
+                descripcion: 'Extracción de reseñas de Google Maps y borrador IA de respuestas constructivas.',
+                arquitectura: [{ tool: 'Apify', rol: 'Scraping' }, { tool: 'DeepSeek', rol: 'Draft' }, { tool: 'Twenty CRM', rol: 'Tickets' }],
+                fases: [
+                    { fase: 'Scraping', duracion: 'Sem 1', tareas: ['Actor G-Maps'] },
+                    { fase: 'Sentimiento', duracion: 'Sem 2', tareas: ['Clasificación IA'] },
+                    { fase: 'Tickets', duracion: 'Sem 3', tareas: ['Alertas CRM'] }
+                ],
+                infra: ['Apify', 'DeepSeek'], entregable: 'Dashboard de Reputación.',
+                ahorroHoras: 12, ahorroMes: 2500000, rolAfectado: 'Gerencia Local', setupMin: 2800000, setupMax: 4000000, mensualMin: 750000, mensualMax: 1100000, soporte: 350000, tiempoImpl: '3 sem', payback: '2-3 meses'
+            },
+            {
+                id: 26, urlRepo: '#', urlApp: '#', grupo: 'F', builder: 'Esteban', nombre: 'NEXO 4.0 (Smart Operations Center)', icono: '⚙️',
+                dolor: 'Operaciones desconectadas y procesos manuales que generan cuellos de botella.',
+                descripcion: 'Kernel operativo autónomo web. Frontend en Next.js y backend en n8n con SQLite para trazabilidad.',
+                arquitectura: [{ tool: 'Next.js', rol: 'Frontend UI' }, { tool: 'n8n', rol: 'Core Automatización' }, { tool: 'SQLite', rol: 'BD Persistente' }],
+                fases: [
+                    { fase: 'Infra & DB', duracion: 'Sem 1', tareas: ['Docker Compose', 'Tablas SQLite'] },
+                    { fase: 'Workflows n8n', duracion: 'Sem 2', tareas: ['Webhook Request', 'SLA Monitor'] },
+                    { fase: 'UI Next.js', duracion: 'Sem 3', tareas: ['Route Handlers BFF', 'Dashboard App'] }
+                ],
+                infra: ['Next.js', 'n8n', 'SQLite', 'Docker'], entregable: 'Portal Web de Solicitudes y Dashboard.',
+                ahorroHoras: 60, ahorroMes: 10000000, rolAfectado: 'Director de Operaciones', setupMin: 6000000, setupMax: 9000000, mensualMin: 1500000, mensualMax: 2500000, soporte: 500000, tiempoImpl: '4 sem', payback: '2 meses'
+            }
+        ];
+
+        const grupos = {
+            A: { nombre: 'Comercio Electrónico y Logística', color: '#22d3ee' },
+            B: { nombre: 'Ventas, CRM y Captación', color: '#8b5cf6' },
+            C: { nombre: 'Agendamiento y Voice/Chat', color: '#f59e0b' },
+            D: { nombre: 'Recursos Humanos y Reclutamiento', color: '#10b981' },
+            E: { nombre: 'Data Science y Automatización', color: '#3b82f6' },
+            F: { nombre: 'Gestión Interna y Rentabilidad', color: '#f472b6' }
+        };
+
+        function fmt(n) { return '$' + Math.round(n / 1000000 * 10) / 10 + 'M'; }
+        function fmtFull(n) { return '$' + n.toLocaleString('es-CO'); }
+
+        // ===================== MODAL DETALLE =====================
+        function abrirModal(id) {
+            const s = soluciones.find(x => x.id === id);
+            document.getElementById('modal-grupo').innerHTML = `Grupo ${s.grupo} · ${grupos[s.grupo].nombre}`;
+            document.getElementById('modal-builder').innerHTML = `👤 Builder: ${s.builder}`;
+            document.getElementById('modal-titulo').innerHTML = `${s.icono} ${s.nombre}`;
+
+            document.getElementById('modal-body').innerHTML = `
+    <div class="grid md:grid-cols-3 gap-4">
+      <div class="bg-am-card2 rounded-lg p-4 border border-am-border">
+        <div class="text-xs text-am-muted mb-1">Setup (pago único)</div>
+        <div class="text-lg font-grotesk font-bold text-am-green">${fmtFull(s.setupMin)} – ${fmtFull(s.setupMax)}</div>
+      </div>
+      <div class="bg-am-card2 rounded-lg p-4 border border-am-border">
+        <div class="text-xs text-am-muted mb-1">Suscripción mensual</div>
+        <div class="text-lg font-grotesk font-bold text-am-cyan">${fmtFull(s.mensualMin)} – ${fmtFull(s.mensualMax)}</div>
+        <div class="text-xs text-am-muted mt-1">+ soporte ${fmtFull(s.soporte)}/mes</div>
+      </div>
+      <div class="bg-am-card2 rounded-lg p-4 border border-am-border">
+        <div class="text-xs text-am-muted mb-1">ROI del cliente</div>
+        <div class="text-lg font-grotesk font-bold text-am-amber">${s.payback}</div>
+        <div class="text-xs text-am-muted mt-1">Ahorro: ${fmtFull(s.ahorroMes)}/mes · ${s.ahorroHoras}h/mes</div>
+      </div>
+    </div>
+
+    <div>
+      <div class="text-xs font-semibold text-am-muted uppercase tracking-wide mb-2">Dolor que resuelve (hook para video)</div>
+      <div class="bg-am-card2 border border-am-amber/30 rounded-lg p-4 text-sm italic text-am-amber">"${s.dolor}"</div>
+    </div>
+
+    <div>
+      <div class="text-xs font-semibold text-am-muted uppercase tracking-wide mb-2">Descripción</div>
+      <p class="text-sm text-am-muted">${s.descripcion}</p>
+    </div>
+
+    <div>
+      <div class="text-xs font-semibold text-am-muted uppercase tracking-wide mb-3">Arquitectura del flujo</div>
+      <div class="flex flex-wrap gap-2">
+        ${s.arquitectura.map((a, i) => '<div class="flex items-center gap-2"><div class="bg-am-card2 border border-am-border rounded-lg px-3 py-2"><div class="text-sm font-semibold text-am-cyan">' + a.tool + '</div><div class="text-xs text-am-muted">' + a.rol + '</div></div>' + (i < s.arquitectura.length - 1 ? '<div class="text-am-muted text-xl">→</div>' : '') + '</div>').join('')}
+      </div>
+    </div>
+
+    <div>
+      <div class="text-xs font-semibold text-am-muted uppercase tracking-wide mb-3">Implementación paso a paso (${s.tiempoImpl})</div>
+      <div class="space-y-3">
+        ${s.fases.map(f => '<div class="bg-am-card2 border border-am-border rounded-lg p-4"><div class="flex justify-between items-center mb-2"><div class="font-semibold text-sm text-am-cyan">' + f.fase + '</div><span class="badge bg-am-cyan/10 text-am-cyan border border-am-cyan/30">' + f.duracion + '</span></div><ul class="space-y-1">' + f.tareas.map(t => '<li class="text-xs text-am-muted flex gap-2"><span class="text-am-green mt-0.5">✓</span>' + t + '</li>').join('') + '</ul></div>').join('')}
+      </div>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-4">
+      <div>
+        <div class="text-xs font-semibold text-am-muted uppercase tracking-wide mb-2">Infraestructura</div>
+        <div class="flex flex-wrap gap-2">
+          ${s.infra.map(i => '<span class="badge bg-am-violet/10 text-am-violet border border-am-violet/30">' + i + '</span>').join('')}
+        </div>
+      </div>
+      <div>
+        <div class="text-xs font-semibold text-am-muted uppercase tracking-wide mb-2">Entregable (Dashboard)</div>
+        <p class="text-xs text-am-muted">${s.entregable}</p>
+        <div class="mt-2 text-xs text-am-muted">Perfil impactado: <span class="text-am-text font-semibold">${s.rolAfectado}</span></div>
+      </div>
+    </div>
+
+    ${s.n8nFlow ? `
+    <div class="mt-4">
+      <div class="text-xs font-semibold text-am-muted uppercase tracking-wide mb-3">Flujo n8n (Visualización)</div>
+      <div class="bg-am-card2 border border-am-border rounded-lg p-4 overflow-x-auto flex justify-center">
+        <pre class="mermaid">${s.n8nFlow}</pre>
+      </div>
+    </div>
+    ` : ''}
+  `;
+
+            document.getElementById('modal-solucion').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+
+            if (s.n8nFlow && window.mermaid) {
+                setTimeout(() => { mermaid.run({ querySelector: '.mermaid' }); }, 50);
+            }
+        }
+
+        function cerrarModal() {
+            document.getElementById('modal-solucion').classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        document.getElementById('modal-solucion').addEventListener('click', function (e) {
+            if (e.target === this) cerrarModal();
+        });
+
+        // ===================== RENDER SOLUCIONES GRID =====================
+        let filtroActual = 'todos';
+        function renderSoluciones() {
+            const grid = document.getElementById('grid-soluciones');
+            const filtradas = filtroActual === 'todos' ? soluciones : soluciones.filter(s => s.grupo === filtroActual);
+            grid.innerHTML = filtradas.map(s => `
+    <div class="bg-am-card border border-am-border rounded-xl p-5 card-hover cursor-pointer relative" onclick="abrirModal(${s.id})">
+      <div class="absolute top-4 right-4 flex flex-col items-end gap-1">
+          <span class="badge" style="background:${grupos[s.grupo].color}22;color:${grupos[s.grupo].color};border:1px solid ${grupos[s.grupo].color}44">Grupo ${s.grupo}</span>
+          <span class="badge bg-am-card2 text-am-text border border-am-border mt-1">👤 ${s.builder}</span>
+      </div>
+      <div class="flex items-start justify-between mb-3">
+        <div class="text-3xl">${s.icono}</div>
+      </div>
+      <div class="font-grotesk font-semibold mb-2 pr-12">${s.nombre}</div>
+      <p class="text-xs text-am-muted mb-3 line-clamp-2">${s.dolor}</p>
+      <div class="flex gap-2 mb-3">
+        <a href="${s.urlRepo}" target="_blank" class="text-[10px] px-2 py-1 bg-am-card2 border border-am-border rounded text-am-cyan hover:bg-am-cyan/10 transition" onclick="event.stopPropagation()">🔗 Repo</a>
+        <a href="${s.urlApp}" target="_blank" class="text-[10px] px-2 py-1 bg-am-card2 border border-am-border rounded text-am-violet hover:bg-am-violet/10 transition" onclick="event.stopPropagation()">🚀 App</a>
+      </div>
+      <div class="flex justify-between text-xs border-t border-am-border pt-3">
+        <span class="text-am-green font-semibold">${fmt(s.setupMin)} setup</span>
+        <span class="text-am-cyan">${fmt(s.mensualMin)}/mes</span>
+        <span class="text-am-amber">${s.payback}</span>
+      </div>
+    </div>
+  `).join('');
+        }
+
+        document.getElementById('filtros-grupo').innerHTML = `
+  <button onclick="setFiltro('todos')" class="filtro-btn px-3 py-1.5 rounded-lg text-xs border border-am-cyan text-am-cyan bg-am-cyan/10">Todos</button>
+  ${Object.entries(grupos).map(([k, g]) => '<button onclick="setFiltro(\'' + k + '\')" class="filtro-btn px-3 py-1.5 rounded-lg text-xs border border-am-border text-am-muted hover:text-am-text">' + k + ' · ' + g.nombre.split(' ')[0] + '</button>').join('')}
+`;
+
+        function setFiltro(g) {
+            filtroActual = g;
+            document.querySelectorAll('.filtro-btn').forEach(b => {
+                b.className = 'filtro-btn px-3 py-1.5 rounded-lg text-xs border border-am-border text-am-muted hover:text-am-text transition';
+            });
+            event.target.className = 'filtro-btn px-3 py-1.5 rounded-lg text-xs border border-am-cyan text-am-cyan bg-am-cyan/10 transition';
+            renderSoluciones();
+        }
+
+        // ===================== INIT =====================
+        renderSoluciones();
+    </script>
+</body>
+
+</html>

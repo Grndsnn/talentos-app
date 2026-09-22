@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Talent Intelligence OS | MVP Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background-color: #f8fafc; color: #1e293b; display: flex; height: 100vh; overflow: hidden; }
+
+        /* Sidebar */
+        aside { width: 260px; background: #0f172a; color: #fff; display: flex; flex-direction: column; border-right: 1px solid #1e293b; }
+        .side-brand { padding: 20px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #1e293b; }
+        .logo-box { width: 36px; height: 36px; background: linear-gradient(135deg, #06b6d4, #2563eb); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #fff; }
+        nav { flex: 1; padding: 16px 12px; display: flex; flex-direction: column; gap: 8px; }
+        nav a { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 8px; color: #94a3b8; text-decoration: none; font-size: 14px; font-weight: 500; }
+        nav a.active, nav a:hover { background: rgba(37, 99, 235, 0.15); color: #38bdf8; }
+        .side-user { padding: 16px; border-top: 1px solid #1e293b; display: flex; align-items: center; gap: 12px; background: #090d16; }
+        .side-user img { width: 38px; height: 38px; border-radius: 50%; border: 2px solid #334155; }
+
+        /* Main Workspace */
+        main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        header { height: 64px; background: #fff; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; padding: 0 28px; }
+        .header-title { display: flex; align-items: center; gap: 10px; font-size: 15px; font-weight: 700; color: #0f172a; }
+        .badge-req { background: #eff6ff; color: #1d4ed8; padding: 4px 8px; border-radius: 6px; font-size: 12px; border: 1px solid #bfdbfe; }
+        .header-actions { display: flex; gap: 10px; }
+        .btn { padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-white { background: #fff; border: 1px solid #cbd5e1; color: #334155; }
+        .btn-primary { background: #1e3a8a; color: #fff; }
+        .btn-primary:hover { background: #1e40af; }
+
+        /* Content Container */
+        .content { flex: 1; overflow-y: auto; padding: 28px; display: flex; flex-direction: column; gap: 24px; }
+
+        /* Metrics Grid */
+        .grid-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+        .card-stat { background: #fff; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .card-stat-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .card-stat-title { font-size: 13px; color: #64748b; font-weight: 500; }
+        .card-stat-value { font-size: 26px; font-weight: 700; color: #0f172a; }
+
+        /* Controls Bar */
+        .controls-bar { background: #fff; padding: 14px 20px; border-radius: 12px; border: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
+        .filter-group { display: flex; gap: 8px; align-items: center; }
+        .filter-btn { padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 600; border: 1px solid #e2e8f0; background: #f8fafc; color: #475569; cursor: pointer; }
+        .filter-btn.active { background: #0f172a; color: #fff; border-color: #0f172a; }
+        .search-input { padding: 8px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; width: 260px; outline: none; }
+
+        /* Table */
+        .table-container { background: #fff; border-radius: 12px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 13px; }
+        th { background: #f8fafc; padding: 14px 20px; color: #64748b; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid #e2e8f0; }
+        td { padding: 16px 20px; border-bottom: 1px solid #f1f5f9; }
+        tr:hover td { background: #f8fafc; }
+
+        .score-pill { font-weight: 700; font-size: 14px; font-family: monospace; }
+        .score-green { color: #059669; }
+        .score-amber { color: #d97706; }
+        .score-red { color: #e11d48; }
+
+        .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; display: inline-block; }
+        .status-interview { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+        .status-review { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+        .status-discard { background: #ffe4e6; color: #be123c; border: 1px solid #fecdd3; }
+
+        .skill-tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 500; background: #eff6ff; color: #1d4ed8; border: 1px solid #dbeafe; margin-right: 4px; }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <aside>
+        <div class="side-brand">
+            <div class="logo-box"><i class="fa-solid fa-microchip"></i></div>
+            <strong style="font-size: 16px; color: #fff;">TalentOS <span style="font-size: 10px; background: #083344; color: #22d3ee; padding: 2px 6px; border-radius: 4px;">MVP</span></strong>
+        </div>
+        <nav>
+            <a href="#" class="active"><i class="fa-solid fa-chart-pie"></i> Dashboard</a>
+            <a href="#"><i class="fa-solid fa-briefcase"></i> Vacantes Activas</a>
+            <a href="#"><i class="fa-solid fa-users"></i> Base de Talentos</a>
+        </nav>
+        <div class="side-user">
+            <img src="https://ui-avatars.com/api/?name=Ana+Garcia&background=0284c7&color=fff" alt="Avatar">
+            <div>
+                <p style="font-size: 13px; font-weight: 600; color: #f8fafc;">Ana García</p>
+                <p style="font-size: 11px; color: #64748b;">Senior Recruiter</p>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main -->
+    <main>
+        <header>
+            <div class="header-title">
+                <span class="badge-req">REQ-2026-01</span>
+                <span>Senior Backend Developer (Python / AWS)</span>
+            </div>
+            <div class="header-actions">
+                <button onclick="insertTestCandidate()" class="btn btn-white"><i class="fa-solid fa-bolt" style="color: #f59e0b;"></i> + Test Mock</button>
+            </div>
+        </header>
+
+        <div class="content">
+            <!-- Stats -->
+            <div class="grid-stats">
+                <div class="card-stat">
+                    <div class="card-stat-header"><span class="card-stat-title">Total Candidatos</span><i class="fa-solid fa-users" style="color: #2563eb;"></i></div>
+                    <div class="card-stat-value" id="valTotal">0</div>
+                </div>
+                <div class="card-stat">
+                    <div class="card-stat-header"><span class="card-stat-title">Shortlist (Score &gt;= 80)</span><i class="fa-solid fa-check-circle" style="color: #059669;"></i></div>
+                    <div class="card-stat-value" id="valShortlist" style="color: #059669;">0</div>
+                </div>
+                <div class="card-stat">
+                    <div class="card-stat-header"><span class="card-stat-title">Score Promedio</span><i class="fa-solid fa-brain" style="color: #7c3aed;"></i></div>
+                    <div class="card-stat-value" id="valAvg">0</div>
+                </div>
+                <div class="card-stat">
+                    <div class="card-stat-header"><span class="card-stat-title">Horas Ahorradas</span><i class="fa-solid fa-clock" style="color: #0891b2;"></i></div>
+                    <div class="card-stat-value" id="valTime">0h</div>
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="controls-bar">
+                <div class="filter-group">
+                    <span style="font-size: 12px; color: #64748b; font-weight: 600;">Filtrar:</span>
+                    <button onclick="filterBy('ALL')" class="filter-btn active" id="btn-ALL">Todos</button>
+                    <button onclick="filterBy('ENTREVISTAR')" class="filter-btn" id="btn-ENTREVISTAR">Entrevistar</button>
+                    <button onclick="filterBy('REVISAR')" class="filter-btn" id="btn-REVISAR">Revisar</button>
+                    <button onclick="filterBy('DESCARTAR')" class="filter-btn" id="btn-DESCARTAR">Descartar</button>
+                </div>
+                <input type="text" id="searchInput" onkeyup="searchByName()" placeholder="Buscar por nombre o skill..." class="search-input">
+            </div>
+
+            <!-- Table -->
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Candidato</th>
+                            <th>Match Score</th>
+                            <th>Skills Clave</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <tr>
+                            <td colspan="4" style="text-align: center; color: #94a3b8; padding: 30px;">
+                                Conectando a Supabase...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- Supabase Integration -->
+    <script>
+        const SUPABASE_URL = 'https://lfagfjlfpznfduesnwrw.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_up_T1n...'; // <-- TU CLAVE PUBLISHABLE AQUÍ
+        
+        const sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        let listCandidates = [];
+
+        async function loadCandidates() {
+            const { data, error } = await sbClient
+                .from('candidates')
+                .select('*')
+                .order('score_hybrid', { ascending: false });
+
+            if (error) {
+                console.error("Error al leer Supabase:", error);
+                document.getElementById('tableBody').innerHTML = `<tr><td colspan="4" style="text-align: center; color: #e11d48; padding: 20px;">Error de conexión con Supabase. Revisa tu Publishable Key.</td></tr>`;
+                return;
+            }
+
+            listCandidates = data || [];
+            updateStats(listCandidates);
+            renderTable(listCandidates);
+        }
+
+        function renderTable(list) {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+
+            if (list.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: #94a3b8; padding: 30px;">No hay candidatos registrados aún. Haz clic en '+ Test Mock'.</td></tr>`;
+                return;
+            }
+
+            list.forEach(c => {
+                const score = c.score_hybrid || 0;
+                let scoreClass = 'score-green';
+                let statusClass = 'status-interview';
+
+                if (score < 60) {
+                    scoreClass = 'score-red';
+                    statusClass = 'status-discard';
+                } else if (score < 80) {
+                    scoreClass = 'score-amber';
+                    statusClass = 'status-review';
+                }
+
+                const skills = c.parsed_json?.habilidades || [];
+                const tags = skills.slice(0, 3).map(s => `<span class="skill-tag">${s}</span>`).join('');
+
+                const row = `
+                    <tr>
+                        <td>
+                            <strong>${c.name}</strong><br>
+                            <span style="font-size: 11px; color: #64748b;">${c.email || 'Sin correo'}</span>
+                        </td>
+                        <td><span class="score-pill ${scoreClass}">${score}/100</span></td>
+                        <td>${tags || '<span style="color:#94a3b8;">N/A</span>'}</td>
+                        <td><span class="status-badge ${statusClass}">${c.status || 'REVISAR'}</span></td>
+                    </tr>
+                `;
+                tbody.innerHTML += row;
+            });
+        }
+
+        function updateStats(list) {
+            document.getElementById('valTotal').innerText = list.length;
+            document.getElementById('valShortlist').innerText = list.filter(c => c.status === 'ENTREVISTAR').length;
+            const avg = list.length ? Math.round(list.reduce((acc, c) => acc + (c.score_hybrid || 0), 0) / list.length) : 0;
+            document.getElementById('valAvg').innerText = avg;
+            document.getElementById('valTime').innerText = Math.round(list.length * 0.4) + 'h';
+        }
+
+        function filterBy(status) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('btn-' + status).classList.add('active');
+
+            if (status === 'ALL') {
+                renderTable(listCandidates);
+            } else {
+                renderTable(listCandidates.filter(c => c.status === status));
+            }
+        }
+
+        function searchByName() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = listCandidates.filter(c => 
+                c.name.toLowerCase().includes(query) || 
+                (c.email && c.email.toLowerCase().includes(query)) ||
+                (c.parsed_json?.habilidades && c.parsed_json.habilidades.some(s => s.toLowerCase().includes(query)))
+            );
+            renderTable(filtered);
+        }
+
+        async function insertTestCandidate() {
+            const mock = {
+                name: 'Carlos Mendoza',
+                email: 'carlos.m@example.com',
+                score_hybrid: 86,
+                status: 'ENTREVISTAR',
+                parsed_json: { habilidades: ['Python', 'AWS', 'Docker'], anios_experiencia: 5 }
+            };
+            await sbClient.from('candidates').insert([mock]);
+            loadCandidates();
+        }
+
+        document.addEventListener('DOMContentLoaded', loadCandidates);
+    </script>
+</body>
+</html>
