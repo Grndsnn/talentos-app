@@ -14,9 +14,9 @@ class N8nService {
      * @returns {Promise<{success: boolean, status?: number, latency: number}>}
      */
     async notifyBatchProcessing(batchId) {
-        if (!batchId) throw new Error('Se requiere un batchId para notificar a n8n');
+        if (!batchId) throw new Error('Se requiere un batchId para notificar al motor de IA');
 
-        telemetry.info(`Notificando a n8n lote de procesamiento: ${batchId}...`, 'N8N');
+        telemetry.info(`Notificando al motor de IA lote de procesamiento: ${batchId}...`, 'IA_ENGINE');
 
         try {
             const startTime = performance.now();
@@ -31,14 +31,14 @@ class N8nService {
             const latency = Math.round(performance.now() - startTime);
 
             if (response.ok) {
-                telemetry.success(`Webhook n8n notificado con éxito para lote ${batchId} (${latency}ms)`, 'N8N');
+                telemetry.success(`Servicio de IA notificado con éxito para lote ${batchId} (${latency}ms)`, 'IA_ENGINE');
                 return { success: true, latency };
             } else {
-                telemetry.error(`Webhook n8n respondió con status ${response.status} (${response.statusText})`, 'N8N');
+                telemetry.error(`Servicio de IA respondió con status ${response.status} (${response.statusText})`, 'IA_ENGINE');
                 return { success: false, status: response.status, latency };
             }
         } catch (err) {
-            telemetry.error(`Error de red al notificar webhook n8n: ${err.message}`, 'N8N');
+            telemetry.error(`Error de red al notificar servicio de IA: ${err.message}`, 'IA_ENGINE');
             throw err;
         }
     }
@@ -52,7 +52,7 @@ class N8nService {
     }
 
     async testWebhookConnectivity() {
-        telemetry.info('Comprobando endpoint webhook de n8n...', 'N8N');
+        telemetry.info('Comprobando endpoint del motor de IA...', 'IA_ENGINE');
         const startTime = performance.now();
         try {
             // Send lightweight HEAD / OPTIONS test
@@ -61,11 +61,11 @@ class N8nService {
                 headers: { 'Accept': 'application/json' }
             });
             const latency = Math.round(performance.now() - startTime);
-            telemetry.info(`Endpoint n8n respondió status: ${res.status} (${latency}ms)`, 'N8N');
+            telemetry.info(`Endpoint del motor de IA respondió status: ${res.status} (${latency}ms)`, 'IA_ENGINE');
             return { online: true, status: res.status, latency };
         } catch (err) {
             const latency = Math.round(performance.now() - startTime);
-            telemetry.warn(`Prueba de conectividad a n8n: ${err.message}`, 'N8N');
+            telemetry.warn(`Prueba de conectividad al motor de IA: ${err.message}`, 'IA_ENGINE');
             return { online: false, error: err.message, latency };
         }
     }
