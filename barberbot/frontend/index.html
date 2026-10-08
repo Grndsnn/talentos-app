@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recepción IA | Sistema de Agendamiento WhatsApp & Control de Barbería</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <div class="app-layout">
+
+    <!-- 1. Sidebar de Navegación Lateral -->
+    <aside class="sidebar">
+      <div class="side-brand">
+        <div class="brand-logo-box">
+          <i class="fa-solid fa-scissors"></i>
+        </div>
+        <div>
+          <span class="brand-text">Recepción IA</span>
+          <span class="badge-tag">MICRO-SAAS</span>
+        </div>
+      </div>
+
+      <nav class="side-nav">
+        <a href="#" class="nav-link active" id="nav-agenda">
+          <i class="fa-regular fa-calendar-check"></i> Agenda de Barberos
+        </a>
+        <a href="#" class="nav-link" id="nav-finanzas">
+          <i class="fa-solid fa-cash-register"></i> Control de Caja
+        </a>
+        <a href="#" class="nav-link" id="nav-clientes">
+          <i class="fa-regular fa-user"></i> Directorio Clientes
+        </a>
+        <a href="#" class="nav-link" id="nav-config">
+          <i class="fa-solid fa-robot"></i> Estado del Bot
+        </a>
+      </nav>
+
+      <div class="side-user">
+        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" alt="Avatar">
+        <div style="flex: 1; overflow: hidden;">
+          <div style="font-size: 0.8rem; font-weight: 600; color: #fff; white-space: nowrap; text-overflow: ellipsis;">Sofía (Recepcionista)</div>
+          <div style="font-size: 0.68rem; color: #94a3b8;"><i class="fa-solid fa-circle" style="color: #10b981; font-size: 0.45rem;"></i> Bot Activo en WhatsApp</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- 2. Espacio Principal de Trabajo -->
+    <main class="main-content">
+
+      <!-- Header Superior Limpio -->
+      <header class="top-header">
+        <div class="header-left">
+          <div class="page-title">
+            <span>Agenda Operativa</span>
+          </div>
+          <div class="date-selector-pill">
+            <i class="fa-regular fa-calendar"></i>
+            <span id="label-current-date">Cargando fecha...</span>
+          </div>
+        </div>
+
+        <div class="header-right">
+          <div class="live-badge">
+            <span class="live-dot"></span>
+            <span>Meta WhatsApp Cloud API Conectado</span>
+          </div>
+
+          <button class="btn btn-whatsapp" id="btn-open-wa-drawer">
+            <i class="fa-brands fa-whatsapp"></i> Chat Simulator
+          </button>
+
+          <button class="btn btn-primary" id="btn-new-appointment">
+            <i class="fa-solid fa-plus"></i> Agendar Cita
+          </button>
+        </div>
+      </header>
+
+      <!-- Cuerpo del Contenido Scrollable -->
+      <div class="content-body">
+
+        <!-- Fila de 4 KPIs Sobrios -->
+        <section class="kpi-row">
+          <!-- KPI 1 -->
+          <div class="kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-title">Ingresos de Hoy</span>
+              <i class="fa-solid fa-wallet" style="color: #10b981;"></i>
+            </div>
+            <div class="kpi-value" id="kpi-ingresos">$0</div>
+            <div class="kpi-desc" id="kpi-desglose-pago">Efectivo: $0 | Tarjeta: $0</div>
+          </div>
+
+          <!-- KPI 2 -->
+          <div class="kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-title">Citas del Día</span>
+              <i class="fa-regular fa-clock" style="color: #2563eb;"></i>
+            </div>
+            <div class="kpi-value" id="kpi-citas-total">0</div>
+            <div class="kpi-desc" id="kpi-citas-completadas">0 completadas | 0 pendientes</div>
+          </div>
+
+          <!-- KPI 3 -->
+          <div class="kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-title">Tasa Anti-Faltas</span>
+              <i class="fa-solid fa-shield-halved" style="color: #d97706;"></i>
+            </div>
+            <div class="kpi-value" id="kpi-asistencia">100%</div>
+            <div class="kpi-desc" id="kpi-recordatorios">Avisos 2h y 24h activos</div>
+          </div>
+
+          <!-- KPI 4 -->
+          <div class="kpi-card">
+            <div class="kpi-header">
+              <span class="kpi-title">Comisiones a Pagar</span>
+              <i class="fa-solid fa-user-check" style="color: #8b5cf6;"></i>
+            </div>
+            <div class="kpi-value" id="kpi-comisiones">$0</div>
+            <div class="kpi-desc" id="kpi-ganancia-neta">Ganancia neta barbería: $0</div>
+          </div>
+        </section>
+
+        <!-- Panel de Agenda Multi-Barbero -->
+        <section class="agenda-panel">
+          <div class="agenda-header">
+            <div style="font-size: 0.95rem; font-weight: 700; color: #0f172a;">
+              <i class="fa-solid fa-table-columns" style="color: #64748b; margin-right: 0.35rem;"></i> Visualización Multi-Barbero
+            </div>
+
+            <div class="legend-group">
+              <div class="legend-item"><span class="legend-color" style="background:#10b981;"></span> Confirmada</div>
+              <div class="legend-item"><span class="legend-color" style="background:#f59e0b;"></span> Apartada</div>
+              <div class="legend-item"><span class="legend-color" style="background:#ef4444;"></span> No asistió</div>
+              <div class="legend-item"><span class="legend-color" style="background:#3b82f6;"></span> Completada</div>
+              <div class="legend-item"><span class="legend-color" style="background:#64748b;"></span> Bloqueada</div>
+            </div>
+          </div>
+
+          <!-- Columnas Dinámicas de Barberos (Toño, Memo, Carlos) -->
+          <div class="columns-grid" id="barbers-container">
+            <div style="padding: 3rem; text-align: center; color: #64748b; grid-column: 1 / -1;">
+              <i class="fa-solid fa-spinner fa-spin"></i> Cargando agenda de la barbería...
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Botón Flotante para abrir Chat WhatsApp Simulator -->
+  <button class="wa-floating-btn" id="btn-toggle-wa" title="Probar Asistente de WhatsApp">
+    <i class="fa-brands fa-whatsapp"></i>
+  </button>
+
+  <!-- Ventana Flotante / Drawer del Simulador de WhatsApp -->
+  <div class="wa-drawer" id="wa-drawer">
+    <div class="wa-top-bar">
+      <div style="width: 32px; height: 32px; border-radius: 50%; background: #fff; color: #008069; display: flex; align-items: center; justify-content: center; font-weight: bold;">💈</div>
+      <div style="flex: 1;">
+        <div style="font-size: 0.85rem; font-weight: 700;">Recepción BarberBot IA</div>
+        <div style="font-size: 0.68rem; opacity: 0.85;">Sofía (Recepcionista) • en línea</div>
+      </div>
+      <button id="btn-close-wa" style="background: transparent; border: none; color: #fff; font-size: 1.1rem; cursor: pointer;">&times;</button>
+    </div>
+
+    <div class="wa-messages-container" id="wa-chat-history">
+      <div class="wa-msg in">
+        ¡Hola! Soy Sofía, la recepcionista virtual de la barbería. 💈<br><br>
+        ¿Con cuál de nuestros 2 barberos te gustaría agendar? Tenemos a <strong>Toño El Máster</strong> y <strong>Memo Barber</strong>.
+      </div>
+    </div>
+
+    <form class="wa-bottom-bar" id="wa-chat-form">
+      <input type="text" class="wa-text-box" id="wa-message-input" placeholder="Escribe un mensaje como cliente..." autocomplete="off">
+      <button type="submit" class="wa-send-action">
+        <i class="fa-solid fa-paper-plane" style="font-size: 0.85rem;"></i>
+      </button>
+    </form>
+  </div>
+
+  <!-- Modal Detalle y Gestión de Cita -->
+  <div class="modal-backdrop" id="appointment-modal">
+    <div class="clean-modal-box">
+      <button style="position: absolute; top: 1.25rem; right: 1.25rem; background: transparent; border: none; color: #64748b; font-size: 1.3rem; cursor: pointer;" id="btn-close-appointment-modal">&times;</button>
+      <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 1rem; color: #0f172a;">
+        <i class="fa-solid fa-scissors" style="color: #d97706; margin-right: 0.35rem;"></i> Detalle y Liquidación de Cita
+      </h3>
+
+      <div id="appointment-modal-body"></div>
+    </div>
+  </div>
+
+  <!-- Modal Nueva Cita Manual -->
+  <div class="modal-backdrop" id="new-appointment-modal">
+    <div class="clean-modal-box">
+      <button style="position: absolute; top: 1.25rem; right: 1.25rem; background: transparent; border: none; color: #64748b; font-size: 1.3rem; cursor: pointer;" id="btn-close-new-modal">&times;</button>
+      <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 1.25rem; color: #0f172a;">
+        <i class="fa-regular fa-calendar-plus" style="color: #2563eb; margin-right: 0.35rem;"></i> Reservar Cita Manualmente
+      </h3>
+
+      <form id="new-appointment-form" style="display: flex; flex-direction: column; gap: 0.85rem;">
+        <div>
+          <label style="font-size: 0.78rem; font-weight: 600; color: #475569; display: block; margin-bottom: 0.25rem;">Barbero:</label>
+          <select id="form-barber-select" style="width: 100%; padding: 0.6rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.85rem; outline: none;" required></select>
+        </div>
+
+        <div>
+          <label style="font-size: 0.78rem; font-weight: 600; color: #475569; display: block; margin-bottom: 0.25rem;">Servicio:</label>
+          <select id="form-service-select" style="width: 100%; padding: 0.6rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.85rem; outline: none;" required></select>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+          <div>
+            <label style="font-size: 0.78rem; font-weight: 600; color: #475569; display: block; margin-bottom: 0.25rem;">Nombre del Cliente:</label>
+            <input type="text" id="form-client-name" style="width: 100%; padding: 0.6rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.85rem; outline: none;" placeholder="Ej. David Gómez" required>
+          </div>
+          <div>
+            <label style="font-size: 0.78rem; font-weight: 600; color: #475569; display: block; margin-bottom: 0.25rem;">Teléfono WhatsApp:</label>
+            <input type="tel" id="form-client-phone" style="width: 100%; padding: 0.6rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.85rem; outline: none;" placeholder="+57300..." required>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+          <div>
+            <label style="font-size: 0.78rem; font-weight: 600; color: #475569; display: block; margin-bottom: 0.25rem;">Hora de Inicio:</label>
+            <input type="time" id="form-appointment-time" style="width: 100%; padding: 0.6rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.85rem; outline: none;" required>
+          </div>
+          <div>
+            <label style="font-size: 0.78rem; font-weight: 600; color: #475569; display: block; margin-bottom: 0.25rem;">Método de Pago:</label>
+            <select id="form-payment-method" style="width: 100%; padding: 0.6rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.85rem; outline: none;">
+              <option value="pending">Pendiente en Barbería</option>
+              <option value="cash">Efectivo</option>
+              <option value="card">Tarjeta / Datafono</option>
+            </select>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="margin-top: 0.5rem; justify-content: center; padding: 0.7rem;">
+          <i class="fa-solid fa-check"></i> Confirmar y Guardar Cita
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
